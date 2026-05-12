@@ -1,49 +1,49 @@
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { members } from '../config/members'
-import { watchedMovies } from '../config/history'
-import { useStore } from '../store'
-import { MovieCard } from '../components/MovieCard'
-import { Button } from '@/components/ui/button'
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { members } from "../config/members";
+import { watchedMovies } from "../config/history";
+import { useStore } from "../store";
+import { MovieCard } from "../components/MovieCard";
+import { Button } from "@/components/ui/button";
 
 export function VotingPoolPage() {
-  const navigate = useNavigate()
-  const selectedAttendees = useStore((s) => s.selectedAttendees)
-  const assignedNumbers = useStore((s) => s.assignedNumbers)
-  const rolledNumbers = useStore((s) => s.rolledNumbers)
-  const [votes, setVotes] = useState<Record<string, number>>({})
+  const navigate = useNavigate();
+  const selectedAttendees = useStore((s) => s.selectedAttendees);
+  const assignedNumbers = useStore((s) => s.assignedNumbers);
+  const rolledNumbers = useStore((s) => s.rolledNumbers);
+  const [votes, setVotes] = useState<Record<string, number>>({});
 
   const eligibleMovies = useMemo(() => {
     const memberMovies = members
       .filter((m) => selectedAttendees.includes(m.name))
-      .flatMap((m) => m.movies)
+      .flatMap((m) => m.movies);
     return [...new Set(memberMovies)].filter(
-      (m) => !watchedMovies.map(w => w.title).includes(m)
-    )
-  }, [selectedAttendees])
+      (m) => !watchedMovies.map((w) => w.title).includes(m),
+    );
+  }, [selectedAttendees]);
 
   const votingMovies = useMemo(
     () =>
       eligibleMovies.filter((m) => rolledNumbers.includes(assignedNumbers[m])),
-    [eligibleMovies, assignedNumbers, rolledNumbers]
-  )
+    [eligibleMovies, assignedNumbers, rolledNumbers],
+  );
 
   const handleVote = (title: string, delta: 1 | -1) => {
     setVotes((prev) => {
-      const current = prev[title] ?? 0
-      const next = current + delta
+      const current = prev[title] ?? 0;
+      const next = current + delta;
       if (next <= 0) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [title]: _, ...rest } = prev
-        return rest
+        const { [title]: _, ...rest } = prev;
+        return rest;
       }
-      return { ...prev, [title]: next }
-    })
-  }
+      return { ...prev, [title]: next };
+    });
+  };
 
   if (selectedAttendees.length === 0 || votingMovies.length === 0) {
-    navigate('/', { replace: true })
-    return null
+    navigate("/", { replace: true });
+    return null;
   }
 
   return (
@@ -67,13 +67,13 @@ export function VotingPoolPage() {
       </div>
 
       <div className="mt-8 flex gap-3">
-        <Button variant="outline" onClick={() => navigate('/rolling-pool')}>
+        <Button variant="outline" onClick={() => navigate("/rolling-pool")}>
           ← Back
         </Button>
-        <Button variant="outline" onClick={() => navigate('/')}>
+        <Button variant="outline" onClick={() => navigate("/")}>
           Start over
         </Button>
       </div>
     </div>
-  )
+  );
 }

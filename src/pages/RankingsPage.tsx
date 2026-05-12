@@ -1,12 +1,12 @@
-import { useNavigate } from 'react-router-dom'
-import { watchedMovies } from '../config/history'
-import { Button } from '@/components/ui/button'
-import { MovieCard } from '../components/MovieCard'
+import { useNavigate } from "react-router-dom";
+import { watchedMovies } from "../config/history";
+import { Button } from "@/components/ui/button";
+import { MovieCard } from "../components/MovieCard";
 
 export function RankingsPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const sorted = [...watchedMovies].sort((a, b) => b.rating - a.rating)
+  const sorted = [...watchedMovies].sort((a, b) => b.rating - a.rating);
 
   return (
     <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
@@ -34,10 +34,10 @@ export function RankingsPage() {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <Button variant="outline" onClick={() => navigate('/')}>
-          ← Back to Home
+        <Button variant="outline" onClick={() => navigate("/")}>
+          ← Home
         </Button>
       </div>
     </div>
-  )
+  );
 }

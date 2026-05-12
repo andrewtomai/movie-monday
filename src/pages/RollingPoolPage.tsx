@@ -1,40 +1,46 @@
-import { useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { members } from '../config/members'
-import { watchedMovies } from '../config/history'
-import { useStore } from '../store'
-import { MovieCard } from '../components/MovieCard'
-import { Button } from '@/components/ui/button'
+import { useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { members } from "../config/members";
+import { watchedMovies } from "../config/history";
+import { useStore } from "../store";
+import { MovieCard } from "../components/MovieCard";
+import { Button } from "@/components/ui/button";
 
 export function RollingPoolPage() {
-  const navigate = useNavigate()
-  const selectedAttendees = useStore((s) => s.selectedAttendees)
-  const assignedNumbers = useStore((s) => s.assignedNumbers)
-  const rolledNumbers = useStore((s) => s.rolledNumbers)
-  const assignRollingNumbers = useStore((s) => s.assignRollingNumbers)
-  const toggleRolledNumber = useStore((s) => s.toggleRolledNumber)
-  const reseedUnchecked = useStore((s) => s.reseedUnchecked)
+  const navigate = useNavigate();
+  const selectedAttendees = useStore((s) => s.selectedAttendees);
+  const assignedNumbers = useStore((s) => s.assignedNumbers);
+  const rolledNumbers = useStore((s) => s.rolledNumbers);
+  const assignRollingNumbers = useStore((s) => s.assignRollingNumbers);
+  const toggleRolledNumber = useStore((s) => s.toggleRolledNumber);
+  const reseedUnchecked = useStore((s) => s.reseedUnchecked);
 
   const eligibleMovies = useMemo(() => {
     const memberMovies = members
       .filter((m) => selectedAttendees.includes(m.name))
-      .flatMap((m) => m.movies)
+      .flatMap((m) => m.movies);
     return [...new Set(memberMovies)].filter(
-      (m) => !watchedMovies.map(w => w.title).includes(m)
-    )
-  }, [selectedAttendees])
+      (m) => !watchedMovies.map((w) => w.title).includes(m),
+    );
+  }, [selectedAttendees]);
 
   useEffect(() => {
     if (selectedAttendees.length === 0) {
-      navigate('/', { replace: true })
-      return
+      navigate("/", { replace: true });
+      return;
     }
     if (Object.keys(assignedNumbers).length === 0) {
-      assignRollingNumbers(eligibleMovies)
+      assignRollingNumbers(eligibleMovies);
     }
-  }, [selectedAttendees, assignedNumbers, eligibleMovies, assignRollingNumbers, navigate])
+  }, [
+    selectedAttendees,
+    assignedNumbers,
+    eligibleMovies,
+    assignRollingNumbers,
+    navigate,
+  ]);
 
-  const hasVotable = rolledNumbers.length > 0
+  const hasVotable = rolledNumbers.length > 0;
 
   const movieEntries = useMemo(
     () =>
@@ -45,14 +51,14 @@ export function RollingPoolPage() {
           checked: rolledNumbers.includes(assignedNumbers[title]),
         }))
         .sort((a, b) => a.number - b.number),
-    [eligibleMovies, assignedNumbers, rolledNumbers]
-  )
+    [eligibleMovies, assignedNumbers, rolledNumbers],
+  );
 
   const handleNext = () => {
     if (hasVotable) {
-      navigate('/voting-pool')
+      navigate("/voting-pool");
     }
-  }
+  };
 
   if (eligibleMovies.length === 0) {
     return (
@@ -61,11 +67,9 @@ export function RollingPoolPage() {
         <p className="mb-6 text-muted-foreground">
           All movies from selected attendees have been watched.
         </p>
-        <Button onClick={() => navigate('/')}>
-          Go back
-        </Button>
+        <Button onClick={() => navigate("/")}>Go back</Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -88,25 +92,24 @@ export function RollingPoolPage() {
               onToggle={() => toggleRolledNumber(number)}
               showCheckbox
             />
-          ) : null
+          ) : null,
         )}
       </div>
 
       <div className="mt-8 flex gap-3">
-        <Button variant="outline" onClick={() => navigate('/')}>
+        <Button variant="outline" onClick={() => navigate("/")}>
           ← Back
         </Button>
-        <Button variant="outline" onClick={() => reseedUnchecked(eligibleMovies)}>
-          Re-roll
-        </Button>
         <Button
-          onClick={handleNext}
-          disabled={!hasVotable}
-          className="flex-1"
+          variant="outline"
+          onClick={() => reseedUnchecked(eligibleMovies)}
         >
-          Next → Vote
+          ++random
+        </Button>
+        <Button onClick={handleNext} disabled={!hasVotable} className="flex-1">
+          Vote →
         </Button>
       </div>
     </div>
-  )
+  );
 }

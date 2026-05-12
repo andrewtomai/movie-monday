@@ -1,22 +1,22 @@
-import { useNavigate } from 'react-router-dom'
-import { members } from '../config/members'
-import { useStore } from '../store'
-import { SearchableMultiSelect } from '../components/SearchableMultiSelect'
-import { Button } from '@/components/ui/button'
+import { useNavigate } from "react-router-dom";
+import { members } from "../config/members";
+import { useStore } from "../store";
+import { SearchableMultiSelect } from "../components/SearchableMultiSelect";
+import { Button } from "@/components/ui/button";
 
 export function AttendeeSelectPage() {
-  const navigate = useNavigate()
-  const selectedAttendees = useStore((s) => s.selectedAttendees)
-  const setAttendees = useStore((s) => s.setAttendees)
-  const reset = useStore((s) => s.reset)
+  const navigate = useNavigate();
+  const selectedAttendees = useStore((s) => s.selectedAttendees);
+  const setAttendees = useStore((s) => s.setAttendees);
+  const reset = useStore((s) => s.reset);
 
-  const memberNames = members.map((m) => m.name)
+  const memberNames = members.map((m) => m.name);
 
   const handleNext = () => {
     if (selectedAttendees.length > 0) {
-      navigate('/rolling-pool')
+      navigate("/rolling-pool");
     }
-  }
+  };
 
   return (
     <div className="mx-auto flex min-h-svh max-w-lg flex-col justify-center px-4">
@@ -38,7 +38,7 @@ export function AttendeeSelectPage() {
         <Button variant="outline" onClick={reset}>
           Reset
         </Button>
-        <Button variant="outline" onClick={() => navigate('/rankings')}>
+        <Button variant="outline" onClick={() => navigate("/rankings")}>
           View Rankings
         </Button>
         <Button
@@ -46,9 +46,9 @@ export function AttendeeSelectPage() {
           disabled={selectedAttendees.length === 0}
           className="flex-1"
         >
-          Next →
+          Roll →
         </Button>
       </div>
     </div>
-  )
+  );
 }
