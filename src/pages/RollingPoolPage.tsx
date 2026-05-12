@@ -98,6 +98,13 @@ export function RollingPoolPage() {
       <div className="mt-8 flex gap-3">
         <button
           type="button"
+          onClick={() => navigate('/')}
+          className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50"
+        >
+          ← Back
+        </button>
+        <button
+          type="button"
           onClick={() => reseedUnchecked(eligibleMovies)}
           className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50"
         >

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { members } from '../config/members'
 import { useStore } from '../store'
@@ -9,7 +8,6 @@ export function AttendeeSelectPage() {
   const selectedAttendees = useStore((s) => s.selectedAttendees)
   const setAttendees = useStore((s) => s.setAttendees)
   const reset = useStore((s) => s.reset)
-  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   const memberNames = members.map((m) => m.name)
 
@@ -17,11 +15,6 @@ export function AttendeeSelectPage() {
     if (selectedAttendees.length > 0) {
       navigate('/rolling-pool')
     }
-  }
-
-  const handleReset = () => {
-    reset()
-    setShowResetConfirm(false)
   }
 
   return (
@@ -49,32 +42,13 @@ export function AttendeeSelectPage() {
         >
           Next →
         </button>
-        {showResetConfirm ? (
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-red-600"
-            >
-              Confirm
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowResetConfirm(false)}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowResetConfirm(true)}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-700"
-          >
-            Reset
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-700"
+        >
+          Reset
+        </button>
       </div>
     </div>
   )

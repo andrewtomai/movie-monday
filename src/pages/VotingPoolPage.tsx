@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { members } from '../config/members'
 import { watchedMovies } from '../config/history'
@@ -10,6 +10,7 @@ export function VotingPoolPage() {
   const selectedAttendees = useStore((s) => s.selectedAttendees)
   const assignedNumbers = useStore((s) => s.assignedNumbers)
   const rolledNumbers = useStore((s) => s.rolledNumbers)
+  const [votes, setVotes] = useState<Record<string, number>>({})
 
   const eligibleMovies = useMemo(() => {
     const memberMovies = members
@@ -25,6 +26,18 @@ export function VotingPoolPage() {
       eligibleMovies.filter((m) => rolledNumbers.includes(assignedNumbers[m])),
     [eligibleMovies, assignedNumbers, rolledNumbers]
   )
+
+  const handleVote = (title: string, delta: 1 | -1) => {
+    setVotes((prev) => {
+      const current = prev[title] ?? 0
+      const next = current + delta
+      if (next <= 0) {
+        const { [title]: _, ...rest } = prev
+        return rest
+      }
+      return { ...prev, [title]: next }
+    })
+  }
 
   if (selectedAttendees.length === 0 || votingMovies.length === 0) {
     navigate('/', { replace: true })
@@ -42,17 +55,31 @@ export function VotingPoolPage() {
 
       <div className="space-y-3">
         {votingMovies.map((title) => (
-          <MovieCard key={title} title={title} />
+          <MovieCard
+            key={title}
+            title={title}
+            votes={votes[title] ?? 0}
+            onVote={(delta) => handleVote(title, delta)}
+          />
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={() => navigate('/')}
-        className="mt-8 w-full rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-600 transition-all hover:bg-gray-50"
-      >
-        Start over
-      </button>
+      <div className="mt-8 flex gap-3">
+        <button
+          type="button"
+          onClick={() => navigate('/rolling-pool')}
+          className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50"
+        >
+          ← Back
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="flex-1 rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-600 transition-all hover:bg-gray-50"
+        >
+          Start over
+        </button>
+      </div>
     </div>
   )
 }

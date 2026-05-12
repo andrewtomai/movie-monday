@@ -1,4 +1,6 @@
 export const watchedMovies: string[] = [
-  // Add watched movies here as they're viewed, e.g.:
-  // "Parasite",
-]
+  "The Witch",
+  "Baby Driver",
+  "The Man From U.N.C.L.E.",
+  "Altered States",
+];
