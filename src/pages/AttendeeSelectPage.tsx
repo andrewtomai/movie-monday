@@ -36,18 +36,25 @@ export function AttendeeSelectPage() {
       <div className="mt-8 flex gap-3">
         <button
           type="button"
+          onClick={reset}
+          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-700"
+        >
+          Reset
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate('/rankings')}
+          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-700"
+        >
+          View Rankings
+        </button>
+        <button
+          type="button"
           onClick={handleNext}
           disabled={selectedAttendees.length === 0}
           className="flex-1 rounded-lg bg-emerald-500 px-6 py-3 text-center font-medium text-white transition-all hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Next →
-        </button>
-        <button
-          type="button"
-          onClick={reset}
-          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-700"
-        >
-          Reset
         </button>
       </div>
     </div>

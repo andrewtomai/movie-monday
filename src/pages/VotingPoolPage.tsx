@@ -17,7 +17,7 @@ export function VotingPoolPage() {
       .filter((m) => selectedAttendees.includes(m.name))
       .flatMap((m) => m.movies)
     return [...new Set(memberMovies)].filter(
-      (m) => !watchedMovies.includes(m)
+      (m) => !watchedMovies.map(w => w.title).includes(m)
     )
   }, [selectedAttendees])
 
