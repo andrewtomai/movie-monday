@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { Input } from '@/components/ui/input'
+import { XIcon } from 'lucide-react'
 
 interface SearchableMultiSelectProps {
   options: string[]
@@ -14,7 +16,7 @@ function highlightMatch(text: string, query: string) {
   return (
     <>
       {text.slice(0, idx)}
-      <span className="font-semibold underline decoration-emerald-500 decoration-2 underline-offset-2">
+      <span className="font-semibold underline decoration-primary decoration-2 underline-offset-2">
         {text.slice(idx, idx + query.length)}
       </span>
       {text.slice(idx + query.length)}
@@ -39,9 +41,9 @@ export function SearchableMultiSelect({
       o.toLowerCase().includes(query.toLowerCase()) && !selected.includes(o)
   )
 
-  useEffect(() => {
+  if (highlightedIndex >= filtered.length && filtered.length > 0) {
     setHighlightedIndex(0)
-  }, [filtered.length])
+  }
 
   useEffect(() => {
     if (!listRef.current || highlightedIndex < 0) return
@@ -85,7 +87,7 @@ export function SearchableMultiSelect({
 
   return (
     <div className="relative">
-      <input
+      <Input
         ref={inputRef}
         type="text"
         value={query}
@@ -94,7 +96,6 @@ export function SearchableMultiSelect({
         onBlur={() => setTimeout(() => setFocused(false), 150)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none transition-colors focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
       />
       {focused && filtered.length > 0 && (
         <ul
@@ -106,10 +107,10 @@ export function SearchableMultiSelect({
               key={name}
               onMouseDown={() => handleSelect(name)}
               onMouseEnter={() => setHighlightedIndex(i)}
-              className={`cursor-pointer px-4 py-2 text-gray-700 transition-colors ${
+              className={`cursor-pointer px-4 py-2 text-foreground transition-colors ${
                 i === highlightedIndex
-                  ? 'bg-emerald-50 text-emerald-700'
-                  : 'hover:bg-emerald-50 hover:text-emerald-700'
+                  ? 'bg-accent text-accent-foreground'
+                  : 'hover:bg-accent hover:text-accent-foreground'
               }`}
             >
               {highlightMatch(name, query)}
@@ -122,15 +123,15 @@ export function SearchableMultiSelect({
           {selected.map((name) => (
             <span
               key={name}
-              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1.5 text-sm font-medium text-emerald-800"
+              className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground"
             >
               {name}
               <button
                 type="button"
                 onClick={() => handleRemove(name)}
-                className="inline-flex h-4 w-4 items-center justify-center rounded-full transition-colors hover:bg-emerald-200"
+                className="inline-flex items-center justify-center rounded-full p-0.5 transition-colors hover:bg-secondary-foreground/10"
               >
-                ×
+                <XIcon className="size-3.5" />
               </button>
             </span>
           ))}

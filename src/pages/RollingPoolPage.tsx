@@ -4,6 +4,7 @@ import { members } from '../config/members'
 import { watchedMovies } from '../config/history'
 import { useStore } from '../store'
 import { MovieCard } from '../components/MovieCard'
+import { Button } from '@/components/ui/button'
 
 export function RollingPoolPage() {
   const navigate = useNavigate()
@@ -56,27 +57,23 @@ export function RollingPoolPage() {
   if (eligibleMovies.length === 0) {
     return (
       <div className="mx-auto flex min-h-svh max-w-lg flex-col items-center justify-center px-4 text-center">
-        <p className="mb-2 text-lg text-gray-900">No eligible movies</p>
-        <p className="mb-6 text-gray-500">
+        <p className="mb-2 text-lg text-foreground">No eligible movies</p>
+        <p className="mb-6 text-muted-foreground">
           All movies from selected attendees have been watched.
         </p>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="rounded-lg bg-emerald-500 px-6 py-3 font-medium text-white hover:bg-emerald-600"
-        >
+        <Button onClick={() => navigate('/')}>
           Go back
-        </button>
+        </Button>
       </div>
     )
   }
 
   return (
     <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
-      <h2 className="mb-1 text-2xl font-light tracking-tight text-gray-900">
+      <h2 className="mb-1 text-2xl font-light tracking-tight text-foreground">
         Rolling Pool
       </h2>
-      <p className="mb-6 text-sm text-gray-500">
+      <p className="mb-6 text-sm text-muted-foreground">
         Check the numbers that were rolled
       </p>
 
@@ -96,28 +93,19 @@ export function RollingPoolPage() {
       </div>
 
       <div className="mt-8 flex gap-3">
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50"
-        >
+        <Button variant="outline" onClick={() => navigate('/')}>
           ← Back
-        </button>
-        <button
-          type="button"
-          onClick={() => reseedUnchecked(eligibleMovies)}
-          className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50"
-        >
+        </Button>
+        <Button variant="outline" onClick={() => reseedUnchecked(eligibleMovies)}>
           Re-roll
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
           onClick={handleNext}
           disabled={!hasVotable}
-          className="flex-1 rounded-lg bg-emerald-500 px-6 py-3 text-center font-medium text-white transition-all hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex-1"
         >
           Next → Vote
-        </button>
+        </Button>
       </div>
     </div>
   )

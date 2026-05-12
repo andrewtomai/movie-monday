@@ -4,6 +4,7 @@ import { members } from '../config/members'
 import { watchedMovies } from '../config/history'
 import { useStore } from '../store'
 import { MovieCard } from '../components/MovieCard'
+import { Button } from '@/components/ui/button'
 
 export function VotingPoolPage() {
   const navigate = useNavigate()
@@ -32,6 +33,7 @@ export function VotingPoolPage() {
       const current = prev[title] ?? 0
       const next = current + delta
       if (next <= 0) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [title]: _, ...rest } = prev
         return rest
       }
@@ -46,10 +48,10 @@ export function VotingPoolPage() {
 
   return (
     <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
-      <h2 className="mb-1 text-2xl font-light tracking-tight text-gray-900">
+      <h2 className="mb-1 text-2xl font-light tracking-tight text-foreground">
         Voting Pool
       </h2>
-      <p className="mb-6 text-sm text-gray-500">
+      <p className="mb-6 text-sm text-muted-foreground">
         Time to vote on the final selection
       </p>
 
@@ -65,20 +67,12 @@ export function VotingPoolPage() {
       </div>
 
       <div className="mt-8 flex gap-3">
-        <button
-          type="button"
-          onClick={() => navigate('/rolling-pool')}
-          className="rounded-lg border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-gray-600 transition-all hover:bg-gray-50"
-        >
+        <Button variant="outline" onClick={() => navigate('/rolling-pool')}>
           ← Back
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="flex-1 rounded-lg border border-gray-300 bg-white px-6 py-3 font-medium text-gray-600 transition-all hover:bg-gray-50"
-        >
+        </Button>
+        <Button variant="outline" onClick={() => navigate('/')}>
           Start over
-        </button>
+        </Button>
       </div>
     </div>
   )

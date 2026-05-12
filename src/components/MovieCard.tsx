@@ -1,65 +1,83 @@
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
+
 interface MovieCardProps {
   title: string
+  subtitle?: string
+  rank?: number
   assignedNumber?: number
   checked?: boolean
   onToggle?: () => void
   showCheckbox?: boolean
   votes?: number
   onVote?: (delta: 1 | -1) => void
+  rightContent?: React.ReactNode
 }
 
 export function MovieCard({
   title,
+  subtitle,
+  rank,
   assignedNumber,
   checked,
   onToggle,
   showCheckbox,
   votes,
   onVote,
+  rightContent,
 }: MovieCardProps) {
   return (
-    <label
+    <div
+      onClick={onToggle && showCheckbox ? onToggle : undefined}
       className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition-all ${
         checked
-          ? 'border-emerald-400 bg-emerald-50 ring-2 ring-emerald-200'
-          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+          ? 'border-primary bg-accent ring-2 ring-primary/20'
+          : 'border-border bg-card hover:border-ring/50 hover:shadow-sm'
       }`}
     >
+      {rank != null && (
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-lg font-bold text-muted-foreground">
+          {rank}
+        </span>
+      )}
       {showCheckbox && assignedNumber != null && (
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-lg font-bold text-gray-700">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-lg font-bold text-muted-foreground">
           {assignedNumber}
         </span>
       )}
-      <span className="flex-1 text-lg font-medium text-gray-900">{title}</span>
+      <div className="flex-1">
+        <span className="text-lg font-medium text-foreground">{title}</span>
+        {subtitle && (
+          <span className="ml-2 text-sm text-muted-foreground">{subtitle}</span>
+        )}
+      </div>
       {showCheckbox && onToggle && (
-        <input
-          type="checkbox"
-          checked={checked ?? false}
-          onChange={onToggle}
-          className="h-5 w-5 rounded border-gray-300 text-emerald-500 accent-emerald-500"
-        />
+        <Checkbox checked={checked ?? false} onCheckedChange={onToggle} />
       )}
       {onVote && (
         <div className="flex items-center gap-2">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon-xs"
             onMouseDown={(e) => { e.preventDefault(); onVote(-1) }}
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-gray-500 transition-colors hover:border-emerald-400 hover:text-emerald-600"
           >
             −
-          </button>
-          <span className="min-w-[1.5ch] text-center text-lg font-semibold text-gray-900">
+          </Button>
+          <span className="min-w-[1.5ch] text-center text-lg font-semibold text-foreground">
             {votes ?? 0}
           </span>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon-xs"
             onMouseDown={(e) => { e.preventDefault(); onVote(1) }}
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-gray-500 transition-colors hover:border-emerald-400 hover:text-emerald-600"
           >
             +
-          </button>
+          </Button>
         </div>
       )}
-    </label>
+      {rightContent}
+    </div>
   )
 }
