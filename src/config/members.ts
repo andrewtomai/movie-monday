@@ -1,22 +1,20 @@
 export interface Member {
   name: string;
-  movies: [string, string];
+  movies: string[];
 }
 
 export const members: Member[] = [
+  { name: "Alex B", movies: ["10 Things I Hate About You", "The Orphanage"] },
+  { name: "Alex L", movies: ["Hot Rod", "The Man From U.N.C.L.E."] },
   { name: "Andrew", movies: ["Kubo and the Two Strings", "The Nice Guys"] },
-  { name: "Chris", movies: ["Lucky Number Sleven", "Spirited Away"] },
-  { name: "Gentry", movies: ["Get Out", "Everything Everywhere All at Once"] },
-  { name: "Scott", movies: ["The Social Network", "Heat"] },
-  { name: "Nibel", movies: ["Pulp Fiction", "Oldboy"] },
-  { name: "Alex L.", movies: ["The Shining", "Akira"] },
-  { name: "Alex B.", movies: ["Amélie", "Pan's Labyrinth"] },
-  { name: "Ciela", movies: ["No Country for Old Men", "Children of Men"] },
-  { name: "Derek", movies: ["Her", "Ex Machina"] },
-  { name: "Devin", movies: ["The Thing", "Sicario"] },
-  { name: "Ellie", movies: ["Arrival", "Blade Runner 2049"] },
-  { name: "Nick", movies: ["Whiplash", "La La Land"] },
-  { name: "Terren", movies: ["Whiplash", "La La Land"] },
-  { name: "Miranda", movies: ["Whiplash", "La La Land"] },
-  { name: "Shayan", movies: ["Whiplash", "La La Land"] },
+  { name: "Chris", movies: ["Killing of a Sacred Deer", "Lucky Number Sleven"] },
+  { name: "Ciela", movies: ["Waking Life", "Altered States"] },
+  { name: "Derek", movies: ["No Country for Old Men", "In Bruges"] },
+  { name: "Devin", movies: ["Spiderman Into the Spiderverse", "Baby Driver"] },
+  { name: "Gentry", movies: ["Wall-e", "Ex Machina"] },
+  { name: "Gliz", movies: ["Scott Pilgrim vs The World", "Emma"] },
+  { name: "Nible", movies: ["Pans Labrynth", "Akira"] },
+  { name: "Nick", movies: ["2001: A Space Odyssey", "Moonfall"] },
+  { name: "Scott", movies: ["Pride and Prejudice", "The Witch"] },
+  { name: "Terren", movies: ["Perfect Blue", "Amelie"] },
 ];
