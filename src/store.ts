@@ -1,77 +1,85 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { members } from "./config/members";
+import { watchedMovies } from "./config/history";
+
+interface RollingMovie {
+  title: string;
+  isChecked: boolean;
+}
 
 interface AppState {
-  selectedAttendees: string[]
-  assignedNumbers: Record<string, number>
-  rolledNumbers: number[]
+  selectedAttendees: string[];
+  rollingPool: RollingMovie[];
 
-  setAttendees: (names: string[]) => void
-  assignRollingNumbers: (eligibleMovies: string[]) => void
-  toggleRolledNumber: (n: number) => void
-  reseedUnchecked: (eligibleMovies: string[]) => void
-  reset: () => void
+  setAttendees: (names: string[]) => void;
+  assignRollingPool: () => void;
+  toggleChecked: (title: string) => void;
+  reseed: () => void;
+  reset: () => void;
+}
+
+function shuffle<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
 }
 
 export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
       selectedAttendees: [],
-      assignedNumbers: {},
-      rolledNumbers: [],
+      rollingPool: [],
 
       setAttendees: (names) => set({ selectedAttendees: names }),
 
-      assignRollingNumbers: (eligibleMovies) => {
-        const n = eligibleMovies.length
-        const numbers = Array.from({ length: n }, (_, i) => i + 1)
-        for (let i = numbers.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1))
-          ;[numbers[i], numbers[j]] = [numbers[j], numbers[i]]
-        }
-        const assigned: Record<string, number> = {}
-        eligibleMovies.forEach((movie, idx) => {
-          assigned[movie] = numbers[idx]
-        })
-        set({ assignedNumbers: assigned, rolledNumbers: [] })
+      assignRollingPool: () => {
+        const { selectedAttendees } = get();
+        const memberMovies = members
+          .filter((m) => selectedAttendees.includes(m.name))
+          .flatMap((m) => m.movies);
+        const eligibleMovies = [...new Set(memberMovies)].filter(
+          (m) => !watchedMovies.map((w) => w.title).includes(m),
+        );
+        set({
+          rollingPool: shuffle(
+            eligibleMovies.map((title) => ({
+              title,
+              isChecked: false,
+            })),
+          ),
+        });
       },
 
-      toggleRolledNumber: (n) => {
-        const { rolledNumbers } = get()
-        if (rolledNumbers.includes(n)) {
-          set({ rolledNumbers: rolledNumbers.filter((v) => v !== n) })
-        } else {
-          set({ rolledNumbers: [...rolledNumbers, n] })
-        }
+      toggleChecked: (title) => {
+        const { rollingPool } = get();
+        set({
+          rollingPool: rollingPool.map((m) =>
+            m.title === title ? { ...m, isChecked: !m.isChecked } : m,
+          ),
+        });
       },
 
-      reseedUnchecked: (eligibleMovies) => {
-        const { assignedNumbers, rolledNumbers } = get()
-        const unchecked = eligibleMovies.filter(
-          (m) => !rolledNumbers.includes(assignedNumbers[m])
-        )
-        const uncheckedNumbers = unchecked.map((m) => assignedNumbers[m])
-
-        const pool = uncheckedNumbers.slice()
-        for (let i = pool.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1))
-          ;[pool[i], pool[j]] = [pool[j], pool[i]]
-        }
-
-        const next: Record<string, number> = { ...assignedNumbers }
-        unchecked.forEach((movie, idx) => {
-          next[movie] = pool[idx]
-        })
-        set({ assignedNumbers: next })
+      reseed: () => {
+        const { rollingPool } = get();
+        const shuffled = shuffle(rollingPool);
+        set({
+          rollingPool: shuffled.map(({ title }) => ({
+            title,
+            isChecked: false,
+          })),
+        });
       },
 
       reset: () =>
         set({
           selectedAttendees: [],
-          assignedNumbers: {},
-          rolledNumbers: [],
+          rollingPool: [],
         }),
     }),
-    { name: 'movie-monday-state' }
-  )
-)
+    { name: "movie-monday-state" },
+  ),
+);

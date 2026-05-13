@@ -1,7 +1,5 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { members } from "../config/members";
-import { watchedMovies } from "../config/history";
 import { useStore } from "../store";
 import { MovieCard } from "../components/MovieCard";
 import { Button } from "@/components/ui/button";
@@ -9,58 +7,28 @@ import { Button } from "@/components/ui/button";
 export function RollingPoolPage() {
   const navigate = useNavigate();
   const selectedAttendees = useStore((s) => s.selectedAttendees);
-  const assignedNumbers = useStore((s) => s.assignedNumbers);
-  const rolledNumbers = useStore((s) => s.rolledNumbers);
-  const assignRollingNumbers = useStore((s) => s.assignRollingNumbers);
-  const toggleRolledNumber = useStore((s) => s.toggleRolledNumber);
-  const reseedUnchecked = useStore((s) => s.reseedUnchecked);
-
-  const eligibleMovies = useMemo(() => {
-    const memberMovies = members
-      .filter((m) => selectedAttendees.includes(m.name))
-      .flatMap((m) => m.movies);
-    return [...new Set(memberMovies)].filter(
-      (m) => !watchedMovies.map((w) => w.title).includes(m),
-    );
-  }, [selectedAttendees]);
+  const rollingPool = useStore((s) => s.rollingPool);
+  const assignRollingPool = useStore((s) => s.assignRollingPool);
+  const toggleChecked = useStore((s) => s.toggleChecked);
+  const reseed = useStore((s) => s.reseed);
 
   useEffect(() => {
     if (selectedAttendees.length === 0) {
       navigate("/", { replace: true });
       return;
     }
-    if (Object.keys(assignedNumbers).length === 0) {
-      assignRollingNumbers(eligibleMovies);
-    }
-  }, [
-    selectedAttendees,
-    assignedNumbers,
-    eligibleMovies,
-    assignRollingNumbers,
-    navigate,
-  ]);
+    assignRollingPool();
+  }, [selectedAttendees, assignRollingPool, reseed, navigate]);
 
-  const hasVotable = rolledNumbers.length > 0;
-
-  const movieEntries = useMemo(
-    () =>
-      eligibleMovies
-        .map((title) => ({
-          title,
-          number: assignedNumbers[title],
-          checked: rolledNumbers.includes(assignedNumbers[title]),
-        }))
-        .sort((a, b) => a.number - b.number),
-    [eligibleMovies, assignedNumbers, rolledNumbers],
-  );
+  const isAnyChecked = rollingPool.some((m) => m.isChecked);
 
   const handleNext = () => {
-    if (hasVotable) {
+    if (isAnyChecked) {
       navigate("/voting-pool");
     }
   };
 
-  if (eligibleMovies.length === 0) {
+  if (rollingPool.length === 0) {
     return (
       <div className="mx-auto flex min-h-svh max-w-lg flex-col items-center justify-center px-4 text-center">
         <p className="mb-2 text-lg text-foreground">No eligible movies</p>
@@ -82,31 +50,30 @@ export function RollingPoolPage() {
       </p>
 
       <div className="space-y-3">
-        {movieEntries.map(({ title, number, checked }) =>
-          number != null ? (
-            <MovieCard
-              key={title}
-              title={title}
-              assignedNumber={number}
-              checked={checked}
-              onToggle={() => toggleRolledNumber(number)}
-              showCheckbox
-            />
-          ) : null,
-        )}
+        {rollingPool.map((m, i) => (
+          <MovieCard
+            key={m.title}
+            title={m.title}
+            assignedNumber={i + 1}
+            checked={m.isChecked}
+            onToggle={() => toggleChecked(m.title)}
+            showCheckbox
+          />
+        ))}
       </div>
 
       <div className="mt-8 flex gap-3">
         <Button variant="outline" onClick={() => navigate("/")}>
           ← Back
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => reseedUnchecked(eligibleMovies)}
-        >
+        <Button variant="outline" onClick={reseed} disabled={isAnyChecked}>
           ++random
         </Button>
-        <Button onClick={handleNext} disabled={!hasVotable} className="flex-1">
+        <Button
+          onClick={handleNext}
+          disabled={!isAnyChecked}
+          className="flex-1"
+        >
           Vote →
         </Button>
       </div>

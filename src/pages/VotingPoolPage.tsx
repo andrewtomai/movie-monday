@@ -1,32 +1,17 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { members } from "../config/members";
-import { watchedMovies } from "../config/history";
 import { useStore } from "../store";
 import { MovieCard } from "../components/MovieCard";
 import { Button } from "@/components/ui/button";
 
 export function VotingPoolPage() {
   const navigate = useNavigate();
-  const selectedAttendees = useStore((s) => s.selectedAttendees);
-  const assignedNumbers = useStore((s) => s.assignedNumbers);
-  const rolledNumbers = useStore((s) => s.rolledNumbers);
+  const rollingPool = useStore((s) => s.rollingPool);
   const [votes, setVotes] = useState<Record<string, number>>({});
 
-  const eligibleMovies = useMemo(() => {
-    const memberMovies = members
-      .filter((m) => selectedAttendees.includes(m.name))
-      .flatMap((m) => m.movies);
-    return [...new Set(memberMovies)].filter(
-      (m) => !watchedMovies.map((w) => w.title).includes(m),
-    );
-  }, [selectedAttendees]);
-
-  const votingMovies = useMemo(
-    () =>
-      eligibleMovies.filter((m) => rolledNumbers.includes(assignedNumbers[m])),
-    [eligibleMovies, assignedNumbers, rolledNumbers],
-  );
+  const votingMovies = rollingPool
+    .filter((m) => m.isChecked)
+    .map((m) => m.title);
 
   const handleVote = (title: string, delta: 1 | -1) => {
     setVotes((prev) => {
@@ -41,7 +26,7 @@ export function VotingPoolPage() {
     });
   };
 
-  if (selectedAttendees.length === 0 || votingMovies.length === 0) {
+  if (votingMovies.length === 0) {
     navigate("/", { replace: true });
     return null;
   }
