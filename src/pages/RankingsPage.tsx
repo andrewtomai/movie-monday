@@ -26,7 +26,7 @@ export function RankingsPage() {
             rank={idx + 1}
             rightContent={
               <span className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
-                {movie.rating.toFixed(1)}
+                {movie.rating.toFixed(2)}
               </span>
             }
           />
