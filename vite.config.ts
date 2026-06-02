@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [tailwindcss(), react(), cloudflare()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "./src/ui"),
     },
   },
 });

@@ -21,8 +21,8 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/ui/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src/ui"]
 }
