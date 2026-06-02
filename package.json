@@ -11,12 +11,16 @@
     "lint": "eslint .",
     "preview": "yarn run build && wrangler dev",
     "deploy": "yarn run build && wrangler deploy",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:migration:create": "drizzle-kit generate",
+    "db:migration:apply": "wrangler d1 migrations apply misc-movie-club-prod",
+    "db:seed": "wrangler d1 execute misc-movie-club-prod --file=src/api/db/seed.sql --local"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.12.23",
     "lucide-react": "^1.14.0",
     "radix-ui": "^1.4.3",
@@ -37,6 +41,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
