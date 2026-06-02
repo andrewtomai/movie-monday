@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+import { Hono } from "hono";
 import type { D1Database } from "@cloudflare/workers-types";
 
 const mockMovieRows = [
@@ -26,25 +27,10 @@ vi.mock("drizzle-orm/d1", () => ({
   }),
 }));
 
-const { default: app } = await import("./app");
+const { default: moviesRoutes } = await import("./movies");
+const app = new Hono().route("/api/movies", moviesRoutes);
 
-describe("worker", () => {
-  it("GET /api/ping returns ok", async () => {
-    const res = await app.request("/api/ping");
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ status: "ok" });
-  });
-
-  it("GET /api/ping responds with application/json", async () => {
-    const res = await app.request("/api/ping");
-    expect(res.headers.get("content-type")).toMatch(/application\/json/);
-  });
-
-  it("returns 404 for unknown routes", async () => {
-    const res = await app.request("/api/nope");
-    expect(res.status).toBe(404);
-  });
-
+describe("movies", () => {
   it("GET /api/movies returns all movies with nominatedBy names", async () => {
     const res = await app.request("/api/movies", {}, { DB: {} as D1Database });
     expect(res.status).toBe(200);
