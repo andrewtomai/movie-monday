@@ -25,6 +25,8 @@ A web app that adds 2 sources of randomness and one source of determinism to sel
 ```bash
 yarn install
 yarn dev
+yarn db:migration:apply # initialize the database
+yarn db:seed # add data to the database
 ```
 
 ## Deploy
