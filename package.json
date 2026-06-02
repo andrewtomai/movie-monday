@@ -14,7 +14,7 @@
     "prepare": "husky",
     "db:migration:create": "drizzle-kit generate",
     "db:migration:apply": "wrangler d1 migrations apply misc-movie-club-prod",
-    "db:seed": "wrangler d1 execute misc-movie-club-prod --file=src/api/db/seed.sql --local"
+    "db:seed": "wrangler d1 execute misc-movie-club-prod --file=src/api/db/seed.sql"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
