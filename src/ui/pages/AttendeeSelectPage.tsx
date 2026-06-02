@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { members } from "../config/members";
 import { useStore } from "../store";
+import { useMembers } from "../hooks/useMembers";
 import { SearchableMultiSelect } from "../components/SearchableMultiSelect";
 import { Button } from "@/components/ui/button";
 
 export function AttendeeSelectPage() {
   const navigate = useNavigate();
+  const { data: members, isLoading } = useMembers();
   const selectedAttendees = useStore((s) => s.selectedAttendees);
   const setAttendees = useStore((s) => s.setAttendees);
   const reset = useStore((s) => s.reset);
 
-  const memberNames = members.map((m) => m.name);
+  const memberNames = members?.map((m) => m.name) ?? [];
 
   const handleNext = () => {
     if (selectedAttendees.length > 0) {
@@ -27,12 +28,16 @@ export function AttendeeSelectPage() {
         Select who's attending tonight
       </p>
 
-      <SearchableMultiSelect
-        options={memberNames}
-        selected={selectedAttendees}
-        onChange={setAttendees}
-        placeholder="Search for a name..."
-      />
+      {isLoading ? (
+        <p className="text-center text-muted-foreground">Loading members...</p>
+      ) : (
+        <SearchableMultiSelect
+          options={memberNames}
+          selected={selectedAttendees}
+          onChange={setAttendees}
+          placeholder="Search for a name..."
+        />
+      )}
 
       <div className="mt-8 flex gap-3">
         <Button variant="outline" onClick={reset}>

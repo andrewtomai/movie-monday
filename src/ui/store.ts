@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { members } from "./config/members";
 import { watchedMovies } from "./config/history";
+import type { MemberData } from "./api/members";
 
 interface RollingMovie {
   title: string;
@@ -13,7 +13,7 @@ interface AppState {
   rollingPool: RollingMovie[];
 
   setAttendees: (names: string[]) => void;
-  assignRollingPool: () => void;
+  assignRollingPool: (members: MemberData[]) => void;
   toggleChecked: (title: string) => void;
   reseed: () => void;
   reset: () => void;
@@ -36,7 +36,8 @@ export const useStore = create<AppState>()(
 
       setAttendees: (names) => set({ selectedAttendees: names }),
 
-      assignRollingPool: () => {
+      assignRollingPool: (members) => {
+        if (members.length === 0) return;
         const { selectedAttendees } = get();
         const memberMovies = members
           .filter((m) => selectedAttendees.includes(m.name))
