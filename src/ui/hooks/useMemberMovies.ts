@@ -1,7 +1,8 @@
 import { useQueries } from "@tanstack/react-query";
 import { fetchMemberMovies } from "../api/members";
+import { type MovieStatus } from "../../types";
 
-function memberMoviesOptions(id: number, status?: "unwatched") {
+function memberMoviesOptions(id: number, status?: MovieStatus) {
   return {
     queryKey: ["member-movies", id, status] as const,
     queryFn: () => fetchMemberMovies(id, status),
@@ -11,7 +12,7 @@ function memberMoviesOptions(id: number, status?: "unwatched") {
 
 export function useMembersMovies(
   ids: number[],
-  status?: "unwatched",
+  status?: MovieStatus,
 ): { titles: string[]; isLoading: boolean } {
   return useQueries({
     queries: ids.map((id) => memberMoviesOptions(id, status)),

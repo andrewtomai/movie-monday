@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { eq, and, isNull } from "drizzle-orm";
 import { members, movies } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
+import { UNWATCHED } from "../../types";
 
 type Env = { DB: D1Database };
 
@@ -22,7 +23,7 @@ app.get("/:id/movies", async (c) => {
   const status = c.req.query("status");
 
   const conditions = [eq(movies.nominatedBy, id)];
-  if (status === "unwatched") {
+  if (status === UNWATCHED) {
     conditions.push(isNull(movies.watchedAt));
   }
 

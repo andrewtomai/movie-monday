@@ -4,6 +4,7 @@ import { useStore } from "../store";
 import { useMembersMovies } from "../hooks/useMemberMovies";
 import { MovieCard } from "../components/MovieCard";
 import { Button } from "@/components/ui/button";
+import { UNWATCHED } from "../../types";
 
 export function RollingPoolPage() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export function RollingPoolPage() {
 
   const { titles } = useMembersMovies(
     selectedAttendees.map((a) => a.id),
-    "unwatched",
+    UNWATCHED,
   );
 
   useEffect(() => {

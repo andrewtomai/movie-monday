@@ -1,3 +1,4 @@
+import type { MovieStatus } from "../../types";
 import { apiFetch } from "./client";
 
 export interface MemberData {
@@ -18,7 +19,7 @@ export function fetchMembers(): Promise<MemberData[]> {
 
 export function fetchMemberMovies(
   id: number,
-  status?: "unwatched",
+  status?: MovieStatus,
 ): Promise<MemberMovieData[]> {
   const params = status ? `?status=${status}` : "";
   return apiFetch<MemberMovieData[]>(`/api/members/${id}/movies${params}`);

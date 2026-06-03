@@ -32,16 +32,17 @@ const mockMovieRows = [
   },
 ];
 
+const mockQueryBuilder: any = {
+  leftJoin: vi.fn(() => mockQueryBuilder),
+  where: vi.fn(() => mockQueryBuilder),
+  build: vi.fn(() => mockQueryBuilder),
+  groupBy: vi.fn(() => Promise.resolve(mockMovieRows)),
+};
+
 vi.mock("drizzle-orm/d1", () => ({
   drizzle: () => ({
     select: () => ({
-      from: () => ({
-        leftJoin: vi.fn().mockReturnValue({
-          leftJoin: vi.fn().mockReturnValue({
-            groupBy: vi.fn().mockResolvedValue(mockMovieRows),
-          }),
-        }),
-      }),
+      from: vi.fn(() => mockQueryBuilder),
     }),
   }),
 }));
@@ -69,5 +70,21 @@ describe("movies", () => {
   it("GET /api/movies responds with application/json", async () => {
     const res = await app.request("/api/movies", {}, { DB: {} as D1Database });
     expect(res.headers.get("content-type")).toMatch(/application\/json/);
+  });
+
+  it("GET /api/movies?status=watched returns 200", async () => {
+    const res = await app.request("/api/movies?status=watched", {}, { DB: {} as D1Database });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toHaveLength(3);
+  });
+
+  it("GET /api/movies?status=unwatched returns 200", async () => {
+    const res = await app.request("/api/movies?status=unwatched", {}, { DB: {} as D1Database });
+    expect(res.status).toBe(200);
+  });
+
+  it("GET /api/movies?status=watched filters with isNotNull", async () => {
+    await app.request("/api/movies?status=watched", {}, { DB: {} as D1Database });
+    expect(mockQueryBuilder.where).toHaveBeenCalled();
   });
 });

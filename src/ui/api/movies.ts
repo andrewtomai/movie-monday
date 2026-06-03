@@ -1,4 +1,5 @@
 import { apiFetch } from "./client";
+import type { MovieStatus } from "../../types";
 
 export interface MovieData {
   id: number;
@@ -9,6 +10,7 @@ export interface MovieData {
   rating: { avg: number | null; count: number };
 }
 
-export function fetchMovies(): Promise<MovieData[]> {
-  return apiFetch<MovieData[]>("/api/movies");
+export function fetchMovies(status?: MovieStatus): Promise<MovieData[]> {
+  const path = status ? `/api/movies?status=${status}` : "/api/movies";
+  return apiFetch<MovieData[]>(path);
 }

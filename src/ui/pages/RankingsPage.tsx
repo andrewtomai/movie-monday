@@ -3,14 +3,20 @@ import { useMovies } from "../hooks/useMovies";
 import { Button } from "@/components/ui/button";
 import { MovieCard } from "../components/MovieCard";
 
+function formatDate(dateStr: string | null) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  const month = d.toLocaleDateString("en-US", { month: "short" });
+  return `${month}, ${d.getFullYear()}`;
+}
+
 export function RankingsPage() {
   const navigate = useNavigate();
-  const { data } = useMovies();
+  const { data } = useMovies("watched");
 
-  const watched = data?.filter((m) => m.watchedAt !== null) ?? [];
-  const sorted = [...watched].sort(
-    (a, b) => (b.rating.avg ?? 0) - (a.rating.avg ?? 0),
-  );
+  const sorted = (data ?? [])
+    .filter((m) => m.rating.avg != null)
+    .sort((a, b) => (b.rating.avg ?? 0) - (a.rating.avg ?? 0));
 
   return (
     <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
@@ -31,7 +37,7 @@ export function RankingsPage() {
           <MovieCard
             key={movie.id}
             title={movie.title}
-            subtitle={`— ${movie.nominatedBy}  ·  ${movie.watchedAt}`}
+            subtitle={`— ${movie.nominatedBy} · ${formatDate(movie.watchedAt)}`}
             rank={idx + 1}
             rightContent={
               <span className="flex items-center gap-2">
@@ -39,7 +45,7 @@ export function RankingsPage() {
                   ({movie.rating.count})
                 </span>
                 <span className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
-                  {(movie.rating.avg ?? 0).toFixed(2)}
+                  {movie.rating.avg?.toFixed(2) ?? "—"}
                 </span>
               </span>
             }

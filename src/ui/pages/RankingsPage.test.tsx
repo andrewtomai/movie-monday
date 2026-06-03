@@ -67,6 +67,7 @@ describe("RankingsPage", () => {
     expect(
       screen.getByText("All watched movies, ranked"),
     ).toBeInTheDocument();
+    expect(useMovies).toHaveBeenCalledWith("watched");
   });
 
   it("renders movies sorted by rating descending", () => {
@@ -117,15 +118,15 @@ describe("RankingsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("filters out unwatched movies (watchedAt is null)", () => {
+  it("filters out movies without ratings", () => {
     vi.mocked(useMovies).mockReturnValue({
       data: [
         ...mockMoviesData,
         {
           id: 5,
-          title: "Unwatched Movie",
+          title: "Unrated Movie",
           nominatedBy: "Test",
-          watchedAt: null,
+          watchedAt: "2026-06-01",
           createdAt: "2026-01-01",
           rating: { avg: null, count: 0 },
         },
@@ -133,7 +134,7 @@ describe("RankingsPage", () => {
     } as any);
 
     render(<RankingsPage />, { wrapper: createWrapper() });
-    expect(screen.queryByText("Unwatched Movie")).toBeNull();
+    expect(screen.queryByText("Unrated Movie")).toBeNull();
   });
 
   it("navigates home when ← Home is clicked", async () => {
