@@ -17,8 +17,8 @@
 		{
 			"binding": "DB",
 			"database_name": "misc-movie-club-prod",
-			"database_id": "ce9aaf77-ca00-474b-a1b5-e43aa3b0eb17",
 			"migrations_dir": "./src/api/db/migrations",
+			"database_id": "25b71aac-1739-4ee8-b025-555d050267a7"
 		}
 	]
 }
