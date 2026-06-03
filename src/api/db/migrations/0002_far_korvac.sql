@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `movies_title_unique` ON `movies` (`title`);

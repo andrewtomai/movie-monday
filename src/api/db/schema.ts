@@ -11,7 +11,7 @@ export const members = sqliteTable("members", {
 
 export const movies = sqliteTable("movies", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
+  title: text("title").notNull().unique(),
   nominatedBy: integer("nominated_by")
     .notNull()
     .references(() => members.id),
