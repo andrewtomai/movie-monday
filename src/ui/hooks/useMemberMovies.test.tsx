@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-import { useMemberMovies } from "./useMemberMovies";
+import { useMembersMovies } from "./useMemberMovies";
 
 vi.mock("../api/members", () => ({
   fetchMemberMovies: vi.fn(),
@@ -19,59 +19,81 @@ function createQueryWrapper() {
   );
 }
 
-const mockMovies = [
+const mockMoviesA = [
   { id: 1, title: "Inception", watchedAt: null, createdAt: "2026-01-01" },
   { id: 2, title: "Tenet", watchedAt: null, createdAt: "2026-01-01" },
 ];
+const mockMoviesB = [
+  { id: 3, title: "Dunkirk", watchedAt: null, createdAt: "2026-01-01" },
+];
 
-describe("useMemberMovies", () => {
+describe("useMembersMovies", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("fetches movies for a given member id", async () => {
-    vi.mocked(fetchMemberMovies).mockResolvedValue(mockMovies);
+  it("fetches unwatched movies for multiple ids and flattens titles", async () => {
+    vi.mocked(fetchMemberMovies)
+      .mockResolvedValueOnce(mockMoviesA)
+      .mockResolvedValueOnce(mockMoviesB);
 
-    const { result } = renderHook(() => useMemberMovies(1), {
-      wrapper: createQueryWrapper(),
-    });
-
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-    expect(result.current.data).toEqual(mockMovies);
-    expect(fetchMemberMovies).toHaveBeenCalledWith(1, undefined);
-  });
-
-  it("passes status filter to fetch", async () => {
-    vi.mocked(fetchMemberMovies).mockResolvedValue(mockMovies);
-
-    renderHook(() => useMemberMovies(1, "unwatched"), {
-      wrapper: createQueryWrapper(),
-    });
-
-    await waitFor(() => {
-      expect(fetchMemberMovies).toHaveBeenCalledWith(1, "unwatched");
-    });
-  });
-
-  it("caches results by id and status", async () => {
-    vi.mocked(fetchMemberMovies).mockResolvedValue(mockMovies);
-
-    const { result, rerender } = renderHook(
-      ({ id, status }: { id: number; status?: "unwatched" }) =>
-        useMemberMovies(id, status),
-      {
-        initialProps: { id: 1, status: "unwatched" as const },
-        wrapper: createQueryWrapper(),
-      },
+    const { result } = renderHook(
+      () => useMembersMovies([1, 2], "unwatched"),
+      { wrapper: createQueryWrapper() },
     );
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(fetchMemberMovies).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    rerender({ id: 2, status: "unwatched" });
-    await waitFor(() => {
-      expect(fetchMemberMovies).toHaveBeenCalledTimes(2);
+    expect(result.current.titles).toEqual(["Inception", "Tenet", "Dunkirk"]);
+    expect(fetchMemberMovies).toHaveBeenCalledTimes(2);
+    expect(fetchMemberMovies).toHaveBeenCalledWith(1, "unwatched");
+    expect(fetchMemberMovies).toHaveBeenCalledWith(2, "unwatched");
+  });
+
+  it("returns empty titles when no ids given", () => {
+    const { result } = renderHook(() => useMembersMovies([]), {
+      wrapper: createQueryWrapper(),
     });
+
+    expect(result.current.titles).toEqual([]);
+    expect(result.current.isLoading).toBe(false);
+    expect(fetchMemberMovies).not.toHaveBeenCalled();
+  });
+
+  it("reports isLoading while any query is loading", async () => {
+    let resolveA!: (v: typeof mockMoviesA) => void;
+    const promiseA = new Promise<typeof mockMoviesA>((r) => {
+      resolveA = r;
+    });
+    vi.mocked(fetchMemberMovies)
+      .mockReturnValueOnce(promiseA)
+      .mockResolvedValueOnce(mockMoviesB);
+
+    const { result } = renderHook(
+      () => useMembersMovies([1, 2], "unwatched"),
+      { wrapper: createQueryWrapper() },
+    );
+
+    expect(result.current.isLoading).toBe(true);
+
+    resolveA(mockMoviesA);
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.titles).toHaveLength(3);
+  });
+
+  it("handles fetch errors gracefully", async () => {
+    vi.mocked(fetchMemberMovies)
+      .mockRejectedValueOnce(new Error("fail"))
+      .mockResolvedValueOnce(mockMoviesB);
+
+    const { result } = renderHook(
+      () => useMembersMovies([1, 2], "unwatched"),
+      { wrapper: createQueryWrapper() },
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.titles).toEqual(["Dunkirk"]);
   });
 });

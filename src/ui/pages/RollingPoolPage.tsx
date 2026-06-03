@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
-import { useMemberMoviesBulk } from "../hooks/useMemberMovies";
+import { useMembersMovies } from "../hooks/useMemberMovies";
 import { MovieCard } from "../components/MovieCard";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ export function RollingPoolPage() {
   const toggleChecked = useStore((s) => s.toggleChecked);
   const reseed = useStore((s) => s.reseed);
 
-  const { titles } = useMemberMoviesBulk(
+  const { titles } = useMembersMovies(
     selectedAttendees.map((a) => a.id),
     "unwatched",
   );

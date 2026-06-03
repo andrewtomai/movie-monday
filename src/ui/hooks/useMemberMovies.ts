@@ -1,4 +1,4 @@
-import { useQuery, useQueries } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { fetchMemberMovies } from "../api/members";
 
 function memberMoviesOptions(id: number, status?: "unwatched") {
@@ -9,11 +9,7 @@ function memberMoviesOptions(id: number, status?: "unwatched") {
   };
 }
 
-export function useMemberMovies(id: number, status?: "unwatched") {
-  return useQuery(memberMoviesOptions(id, status));
-}
-
-export function useMemberMoviesBulk(
+export function useMembersMovies(
   ids: number[],
   status?: "unwatched",
 ): { titles: string[]; isLoading: boolean } {
