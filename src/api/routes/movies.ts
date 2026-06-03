@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
-import { movies, members } from "../db/schema";
+import { eq, avg } from "drizzle-orm";
+import { movies, members, ratings } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 
 type Env = { DB: D1Database };
@@ -11,19 +11,20 @@ const app = new Hono<{ Bindings: Env }>();
 app.get("/", async (c) => {
   const db = drizzle(c.env.DB);
   const result = await db
-    .select()
+    .select({
+      id: movies.id,
+      title: movies.title,
+      nominatedBy: members.name,
+      watchedAt: movies.watchedAt,
+      createdAt: movies.createdAt,
+      avgRating: avg(ratings.rating),
+    })
     .from(movies)
-    .leftJoin(members, eq(movies.nominatedBy, members.id));
+    .leftJoin(members, eq(movies.nominatedBy, members.id))
+    .leftJoin(ratings, eq(movies.id, ratings.movieId))
+    .groupBy(movies.id);
 
-  const data = result.map((row) => ({
-    id: row.movies.id,
-    title: row.movies.title,
-    nominatedBy: row.members?.name ?? null,
-    watchedAt: row.movies.watchedAt,
-    createdAt: row.movies.createdAt,
-  }));
-
-  return c.json(data);
+  return c.json(result);
 });
 
 export default app;

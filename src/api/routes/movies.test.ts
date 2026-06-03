@@ -4,16 +4,28 @@ import type { D1Database } from "@cloudflare/workers-types";
 
 const mockMovieRows = [
   {
-    movies: { id: 1, title: "10 Things I Hate About You", nominatedBy: 1, watchedAt: null, createdAt: "2026-01-01" },
-    members: { id: 1, name: "Alex B", createdAt: "2026-01-01" },
+    id: 1,
+    title: "10 Things I Hate About You",
+    nominatedBy: "Alex B",
+    watchedAt: null,
+    createdAt: "2026-01-01",
+    avgRating: null,
   },
   {
-    movies: { id: 2, title: "The Orphanage", nominatedBy: 1, watchedAt: null, createdAt: "2026-01-01" },
-    members: { id: 1, name: "Alex B", createdAt: "2026-01-01" },
+    id: 2,
+    title: "The Orphanage",
+    nominatedBy: "Alex B",
+    watchedAt: null,
+    createdAt: "2026-01-01",
+    avgRating: null,
   },
   {
-    movies: { id: 3, title: "Baby Driver", nominatedBy: 7, watchedAt: "2026-02-09", createdAt: "2026-01-01" },
-    members: { id: 7, name: "Devin", createdAt: "2026-01-01" },
+    id: 3,
+    title: "Baby Driver",
+    nominatedBy: "Devin",
+    watchedAt: "2026-02-09",
+    createdAt: "2026-01-01",
+    avgRating: 7.92,
   },
 ];
 
@@ -21,7 +33,11 @@ vi.mock("drizzle-orm/d1", () => ({
   drizzle: () => ({
     select: () => ({
       from: () => ({
-        leftJoin: vi.fn().mockResolvedValue(mockMovieRows),
+        leftJoin: vi.fn().mockReturnValue({
+          leftJoin: vi.fn().mockReturnValue({
+            groupBy: vi.fn().mockResolvedValue(mockMovieRows),
+          }),
+        }),
       }),
     }),
   }),
@@ -42,6 +58,7 @@ describe("movies", () => {
       nominatedBy: "Alex B",
       watchedAt: null,
       createdAt: "2026-01-01",
+      avgRating: null,
     });
   });
 

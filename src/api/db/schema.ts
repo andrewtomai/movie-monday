@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
 export const members = sqliteTable("members", {
@@ -16,6 +16,17 @@ export const movies = sqliteTable("movies", {
     .notNull()
     .references(() => members.id),
   watchedAt: text("watched_at"),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const ratings = sqliteTable("ratings", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  rating: real("rating").notNull(),
+  movieId: integer("movie_id")
+    .notNull()
+    .references(() => movies.id),
   createdAt: text("created_at")
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),

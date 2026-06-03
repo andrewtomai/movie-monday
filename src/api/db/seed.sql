@@ -40,3 +40,14 @@ INSERT OR IGNORE INTO movies (title, nominated_by) VALUES
   ('The Witch',                        (SELECT id FROM members WHERE name = 'Scott')),
   ('Perfect Blue',                     (SELECT id FROM members WHERE name = 'Terren')),
   ('Amelie',                           (SELECT id FROM members WHERE name = 'Terren'));
+
+UPDATE movies SET watched_at = '2026-02-09' WHERE title = 'Baby Driver';
+UPDATE movies SET watched_at = '2026-03-02' WHERE title = 'The Man From U.N.C.L.E.';
+UPDATE movies SET watched_at = '2026-04-06' WHERE title = 'The Witch';
+UPDATE movies SET watched_at = '2026-05-11' WHERE title = 'Altered States';
+
+INSERT INTO ratings (movie_id, rating) VALUES
+  ((SELECT id FROM movies WHERE title = 'Baby Driver'),            7.92),
+  ((SELECT id FROM movies WHERE title = 'The Man From U.N.C.L.E.'), 7.91),
+  ((SELECT id FROM movies WHERE title = 'The Witch'),               7.142857143),
+  ((SELECT id FROM movies WHERE title = 'Altered States'),          6.75);
