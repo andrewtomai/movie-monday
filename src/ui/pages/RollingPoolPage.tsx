@@ -1,28 +1,34 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
-import { useMembers } from "../hooks/useMembers";
+import { useMemberMoviesBulk } from "../hooks/useMemberMovies";
 import { MovieCard } from "../components/MovieCard";
 import { Button } from "@/components/ui/button";
 
 export function RollingPoolPage() {
   const navigate = useNavigate();
-  const { data: members } = useMembers();
   const selectedAttendees = useStore((s) => s.selectedAttendees);
   const rollingPool = useStore((s) => s.rollingPool);
   const assignRollingPool = useStore((s) => s.assignRollingPool);
   const toggleChecked = useStore((s) => s.toggleChecked);
   const reseed = useStore((s) => s.reseed);
 
+  const { titles } = useMemberMoviesBulk(
+    selectedAttendees.map((a) => a.id),
+    "unwatched",
+  );
+
   useEffect(() => {
     if (selectedAttendees.length === 0) {
       navigate("/", { replace: true });
-      return;
     }
-    if (members) {
-      assignRollingPool(members);
+  }, [selectedAttendees, navigate]);
+
+  useEffect(() => {
+    if (titles.length > 0) {
+      assignRollingPool(titles);
     }
-  }, [selectedAttendees, members, assignRollingPool, reseed, navigate]);
+  }, [titles, assignRollingPool]);
 
   const isAnyChecked = rollingPool.some((m) => m.isChecked);
 

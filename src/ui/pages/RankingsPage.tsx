@@ -1,12 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { watchedMovies } from "../config/history";
+import { useMovies } from "../hooks/useMovies";
 import { Button } from "@/components/ui/button";
 import { MovieCard } from "../components/MovieCard";
 
 export function RankingsPage() {
   const navigate = useNavigate();
+  const { data } = useMovies();
 
-  const sorted = [...watchedMovies].sort((a, b) => b.rating - a.rating);
+  const watched = data?.filter((m) => m.watchedAt !== null) ?? [];
+  const sorted = [...watched].sort(
+    (a, b) => (b.rating.avg ?? 0) - (a.rating.avg ?? 0),
+  );
 
   return (
     <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
@@ -18,15 +22,25 @@ export function RankingsPage() {
       </p>
 
       <div className="space-y-3">
+        {sorted.length === 0 && (
+          <p className="text-center text-muted-foreground">
+            No rankings available yet.
+          </p>
+        )}
         {sorted.map((movie, idx) => (
           <MovieCard
-            key={movie.title}
+            key={movie.id}
             title={movie.title}
-            subtitle={`— ${movie.nominee}  ·  ${movie.watchedDate} · ${movie.attendees} attended`}
+            subtitle={`— ${movie.nominatedBy}  ·  ${movie.watchedAt}`}
             rank={idx + 1}
             rightContent={
-              <span className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
-                {movie.rating.toFixed(2)}
+              <span className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">
+                  ({movie.rating.count})
+                </span>
+                <span className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
+                  {(movie.rating.avg ?? 0).toFixed(2)}
+                </span>
               </span>
             }
           />

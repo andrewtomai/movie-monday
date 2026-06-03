@@ -19,9 +19,9 @@ vi.mock("../hooks/useMembers", () => ({
 import { useMembers } from "../hooks/useMembers";
 
 const mockMembers = [
-  { name: "Alice", movies: ["Inception"] },
-  { name: "Bob", movies: ["Tenet"] },
-  { name: "Charlie", movies: ["Dunkirk"] },
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" },
 ];
 
 beforeEach(() => {
@@ -60,7 +60,9 @@ describe("AttendeeSelectPage", () => {
     } as any);
 
     render(<AttendeeSelectPage />, { wrapper: createWrapper() });
-    expect(screen.getByPlaceholderText("Search for a name...")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search for a name..."),
+    ).toBeInTheDocument();
   });
 
   it("navigates to rolling-pool when Roll is clicked with attendees", async () => {
@@ -69,7 +71,9 @@ describe("AttendeeSelectPage", () => {
       isLoading: false,
     } as any);
 
-    useStore.getState().setAttendees(["Alice"]);
+    useStore
+      .getState()
+      .setAttendees([{ name: "Alice", id: 1 }]);
     render(<AttendeeSelectPage />, { wrapper: createWrapper() });
     await userEvent.click(screen.getByText("Roll →"));
     expect(mockNavigate).toHaveBeenCalledWith("/rolling-pool");
@@ -91,7 +95,9 @@ describe("AttendeeSelectPage", () => {
       isLoading: false,
     } as any);
 
-    useStore.getState().setAttendees(["Alice"]);
+    useStore
+      .getState()
+      .setAttendees([{ name: "Alice", id: 1 }]);
     render(<AttendeeSelectPage />, { wrapper: createWrapper() });
     await userEvent.click(screen.getByText("Reset"));
     expect(useStore.getState().selectedAttendees).toEqual([]);

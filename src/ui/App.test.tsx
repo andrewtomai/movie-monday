@@ -12,8 +12,8 @@ vi.mock("./hooks/useMembers", () => ({
 import { useMembers } from "./hooks/useMembers";
 
 const mockMembers = [
-  { name: "Alice", movies: ["Inception"] },
-  { name: "Bob", movies: ["Tenet"] },
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
 ];
 
 function renderWithRouter(initialEntries: string[]) {

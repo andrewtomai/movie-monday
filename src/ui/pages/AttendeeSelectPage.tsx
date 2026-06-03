@@ -12,6 +12,15 @@ export function AttendeeSelectPage() {
   const reset = useStore((s) => s.reset);
 
   const memberNames = members?.map((m) => m.name) ?? [];
+  const selectedNames = selectedAttendees.map((a) => a.name);
+
+  const handleChange = (names: string[]) => {
+    if (!members) return;
+    const attendees = names
+      .map((name) => members.find((m) => m.name === name))
+      .filter((m): m is { id: number; name: string } => m !== undefined);
+    setAttendees(attendees);
+  };
 
   const handleNext = () => {
     if (selectedAttendees.length > 0) {
@@ -33,8 +42,8 @@ export function AttendeeSelectPage() {
       ) : (
         <SearchableMultiSelect
           options={memberNames}
-          selected={selectedAttendees}
-          onChange={setAttendees}
+          selected={selectedNames}
+          onChange={handleChange}
           placeholder="Search for a name..."
         />
       )}

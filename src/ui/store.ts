@@ -1,7 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { watchedMovies } from "./config/history";
-import type { MemberData } from "./api/members";
+
+interface SelectedAttendee {
+  name: string;
+  id: number;
+}
 
 interface RollingMovie {
   title: string;
@@ -9,11 +12,11 @@ interface RollingMovie {
 }
 
 interface AppState {
-  selectedAttendees: string[];
+  selectedAttendees: SelectedAttendee[];
   rollingPool: RollingMovie[];
 
-  setAttendees: (names: string[]) => void;
-  assignRollingPool: (members: MemberData[]) => void;
+  setAttendees: (attendees: SelectedAttendee[]) => void;
+  assignRollingPool: (titles: string[]) => void;
   toggleChecked: (title: string) => void;
   reseed: () => void;
   reset: () => void;
@@ -34,20 +37,13 @@ export const useStore = create<AppState>()(
       selectedAttendees: [],
       rollingPool: [],
 
-      setAttendees: (names) => set({ selectedAttendees: names }),
+      setAttendees: (attendees) => set({ selectedAttendees: attendees }),
 
-      assignRollingPool: (members) => {
-        if (members.length === 0) return;
-        const { selectedAttendees } = get();
-        const memberMovies = members
-          .filter((m) => selectedAttendees.includes(m.name))
-          .flatMap((m) => m.movies);
-        const eligibleMovies = [...new Set(memberMovies)].filter(
-          (m) => !watchedMovies.map((w) => w.title).includes(m),
-        );
+      assignRollingPool: (titles) => {
+        if (titles.length === 0) return;
         set({
           rollingPool: shuffle(
-            eligibleMovies.map((title) => ({
+            titles.map((title) => ({
               title,
               isChecked: false,
             })),

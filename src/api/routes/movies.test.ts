@@ -10,6 +10,7 @@ const mockMovieRows = [
     watchedAt: null,
     createdAt: "2026-01-01",
     avgRating: null,
+    ratingCount: 0,
   },
   {
     id: 2,
@@ -18,6 +19,7 @@ const mockMovieRows = [
     watchedAt: null,
     createdAt: "2026-01-01",
     avgRating: null,
+    ratingCount: 0,
   },
   {
     id: 3,
@@ -26,6 +28,7 @@ const mockMovieRows = [
     watchedAt: "2026-02-09",
     createdAt: "2026-01-01",
     avgRating: 7.92,
+    ratingCount: 12,
   },
 ];
 
@@ -47,7 +50,7 @@ const { default: moviesRoutes } = await import("./movies");
 const app = new Hono().route("/api/movies", moviesRoutes);
 
 describe("movies", () => {
-  it("GET /api/movies returns all movies with nominatedBy names", async () => {
+  it("GET /api/movies returns all movies with nested rating", async () => {
     const res = await app.request("/api/movies", {}, { DB: {} as D1Database });
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -58,8 +61,9 @@ describe("movies", () => {
       nominatedBy: "Alex B",
       watchedAt: null,
       createdAt: "2026-01-01",
-      avgRating: null,
+      rating: { avg: null, count: 0 },
     });
+    expect(body[2].rating).toEqual({ avg: 7.92, count: 12 });
   });
 
   it("GET /api/movies responds with application/json", async () => {

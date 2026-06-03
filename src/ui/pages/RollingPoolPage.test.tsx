@@ -12,17 +12,6 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-vi.mock("../hooks/useMembers", () => ({
-  useMembers: vi.fn(),
-}));
-
-import { useMembers } from "../hooks/useMembers";
-
-const mockMembers = [
-  { name: "Alice", movies: ["Inception", "Tenet"] },
-  { name: "Bob", movies: ["Inception", "Dunkirk"] },
-];
-
 beforeEach(() => {
   vi.clearAllMocks();
   useStore.setState({ selectedAttendees: [], rollingPool: [] });
@@ -30,29 +19,22 @@ beforeEach(() => {
 
 describe("RollingPoolPage", () => {
   it("redirects to home when no attendees selected", () => {
-    vi.mocked(useMembers).mockReturnValue({ data: mockMembers } as any);
-
     render(<RollingPoolPage />, { wrapper: createWrapper() });
     expect(mockNavigate).toHaveBeenCalledWith("/", { replace: true });
   });
 
   it("shows empty state when rollingPool is empty", () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice"]);
+    useStore
+      .getState()
+      .setAttendees([{ name: "Alice", id: 1 }]);
 
     render(<RollingPoolPage />, { wrapper: createWrapper() });
     expect(screen.getByText("No eligible movies")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "All movies from selected attendees have been watched.",
-      ),
-    ).toBeInTheDocument();
   });
 
   it("renders rolling pool movies", () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice", "Bob"]);
     useStore.setState({
+      selectedAttendees: [{ name: "Alice", id: 1 }],
       rollingPool: [
         { title: "Tenet", isChecked: false },
         { title: "Dunkirk", isChecked: false },
@@ -61,12 +43,16 @@ describe("RollingPoolPage", () => {
 
     render(<RollingPoolPage />, { wrapper: createWrapper() });
     expect(screen.getByText("Rolling Pool")).toBeInTheDocument();
+    expect(screen.getByText("Tenet")).toBeInTheDocument();
+    expect(screen.getByText("Dunkirk")).toBeInTheDocument();
   });
 
   it("toggles checked state when clicking a movie card", async () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice", "Bob"]);
     useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
       rollingPool: [
         { title: "Tenet", isChecked: false },
         { title: "Dunkirk", isChecked: false },
@@ -84,9 +70,11 @@ describe("RollingPoolPage", () => {
   });
 
   it("navigates to voting-pool when Vote is clicked with checked items", async () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice", "Bob"]);
     useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
       rollingPool: [
         { title: "Tenet", isChecked: true },
         { title: "Dunkirk", isChecked: false },
@@ -99,9 +87,11 @@ describe("RollingPoolPage", () => {
   });
 
   it("disables Vote button when no items checked", () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice", "Bob"]);
     useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
       rollingPool: [
         { title: "Tenet", isChecked: false },
         { title: "Dunkirk", isChecked: false },
@@ -113,9 +103,11 @@ describe("RollingPoolPage", () => {
   });
 
   it("calls reseed when ++random is clicked", async () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice", "Bob"]);
     useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
       rollingPool: [
         { title: "Tenet", isChecked: false },
         { title: "Dunkirk", isChecked: false },
@@ -138,9 +130,11 @@ describe("RollingPoolPage", () => {
   });
 
   it("disables reseed when an item is checked", () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice", "Bob"]);
     useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
       rollingPool: [
         { title: "Tenet", isChecked: true },
         { title: "Dunkirk", isChecked: false },
@@ -152,9 +146,11 @@ describe("RollingPoolPage", () => {
   });
 
   it("navigates back home when ← Back is clicked", async () => {
-    vi.mocked(useMembers).mockReturnValue({ data: undefined } as any);
-    useStore.getState().setAttendees(["Alice", "Bob"]);
     useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
       rollingPool: [
         { title: "Tenet", isChecked: false },
         { title: "Dunkirk", isChecked: false },
