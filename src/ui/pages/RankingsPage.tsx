@@ -126,7 +126,7 @@ export function RankingsPage() {
           <DialogTrigger asChild>
             <Button>+ Add Watched Movie</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="top-4 translate-y-0 sm:top-8 sm:translate-y-0 flex flex-col sm:h-[70vh] h-[80dvh] max-h-[600px]">
             <DialogHeader>
               <DialogTitle>Add Watched Movie</DialogTitle>
             </DialogHeader>
@@ -136,14 +136,14 @@ export function RankingsPage() {
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
             />
-            <div className="max-h-60 space-y-1 overflow-y-auto">
+            <div className="flex-1 space-y-1 overflow-y-auto min-h-0">
               {filtered.map((movie) => (
                 <button
                   key={movie.id}
                   type="button"
                   onClick={() => handleSelect(movie)}
                   disabled={markWatched.isPending}
-                  className="w-full rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+                  className="w-full rounded-lg px-3 py-3 sm:py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
                 >
                   {movie.title}
                 </button>

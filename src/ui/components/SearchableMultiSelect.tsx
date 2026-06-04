@@ -33,7 +33,9 @@ export function SearchableMultiSelect({
       <ComboboxChips>
         <ComboboxValue>
           {selected.map((name) => (
-            <ComboboxChip key={name}>{name}</ComboboxChip>
+            <ComboboxChip key={name} className="min-h-8 py-1.5 text-sm">
+              {name}
+            </ComboboxChip>
           ))}
         </ComboboxValue>
         <ComboboxChipsInput placeholder={placeholder} />
@@ -42,9 +44,9 @@ export function SearchableMultiSelect({
         <ComboboxEmpty>No matches found.</ComboboxEmpty>
         <ComboboxList>
           {(item) => (
-            <ComboboxItem key={item} value={item}>
-              {item}
-            </ComboboxItem>
+              <ComboboxItem key={item} value={item} className="py-3 sm:py-1.5">
+                {item}
+              </ComboboxItem>
           )}
         </ComboboxList>
       </ComboboxContent>
