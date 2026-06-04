@@ -118,15 +118,15 @@ describe("RankingsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("filters out movies without ratings", () => {
+  it("filters out unwatched movies (null watchedAt)", () => {
     vi.mocked(useMovies).mockReturnValue({
       data: [
         ...mockMoviesData,
         {
           id: 5,
-          title: "Unrated Movie",
+          title: "Unwatched Movie",
           nominatedBy: "Test",
-          watchedAt: "2026-06-01",
+          watchedAt: null,
           createdAt: "2026-01-01",
           rating: { avg: null, count: 0 },
         },
@@ -134,7 +134,7 @@ describe("RankingsPage", () => {
     } as any);
 
     render(<RankingsPage />, { wrapper: createWrapper() });
-    expect(screen.queryByText("Unrated Movie")).toBeNull();
+    expect(screen.queryByText("Unwatched Movie")).toBeNull();
   });
 
   it("navigates home when ← Home is clicked", async () => {

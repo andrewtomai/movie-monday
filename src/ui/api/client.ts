@@ -8,10 +8,15 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(path: string): Promise<T> {
-  const res = await fetch(path);
+export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+  const res = await fetch(path, options);
   if (!res.ok) {
-    throw new ApiError(res.status, `API request failed: ${res.statusText}`);
+    let errorMsg = `API request failed: ${res.statusText}`;
+    try {
+      const body = await res.json();
+      if (body?.error) errorMsg = body.error;
+    } catch { /* ignore json parse failure */ }
+    throw new ApiError(res.status, errorMsg);
   }
   return res.json();
 }

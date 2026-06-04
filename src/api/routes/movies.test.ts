@@ -44,6 +44,11 @@ vi.mock("drizzle-orm/d1", () => ({
     select: () => ({
       from: vi.fn(() => mockQueryBuilder),
     }),
+    update: vi.fn(() => ({
+      set: vi.fn(() => ({
+        where: vi.fn(() => Promise.resolve({ success: true })),
+      })),
+    })),
   }),
 }));
 
@@ -86,5 +91,36 @@ describe("movies", () => {
   it("GET /api/movies?status=watched filters with isNotNull", async () => {
     await app.request("/api/movies?status=watched", {}, { DB: {} as D1Database });
     expect(mockQueryBuilder.where).toHaveBeenCalled();
+  });
+
+  describe("PATCH /api/movies/:id", () => {
+    it("marks a movie as watched", async () => {
+      const res = await app.request(
+        "/api/movies/1",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ watchedAt: "2026-06-04" }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({ success: true });
+    });
+
+    it("returns 400 when watchedAt is missing", async () => {
+      const res = await app.request(
+        "/api/movies/1",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error).toBe("watchedAt is required");
+    });
   });
 });

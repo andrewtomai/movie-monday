@@ -51,4 +51,18 @@ app.get("/", async (c) => {
   );
 });
 
+app.patch("/:id", async (c) => {
+  const db = drizzle(c.env.DB);
+  const id = Number(c.req.param("id"));
+  const { watchedAt } = await c.req.json<{ watchedAt: string }>();
+
+  if (!watchedAt) {
+    return c.json({ error: "watchedAt is required" }, 400);
+  }
+
+  await db.update(movies).set({ watchedAt }).where(eq(movies.id, id));
+
+  return c.json({ success: true });
+});
+
 export default app;

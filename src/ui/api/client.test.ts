@@ -73,6 +73,6 @@ describe("apiFetch", () => {
       } as Response);
 
     await apiFetch("/api/members");
-    expect(mockFetch).toHaveBeenCalledWith("/api/members");
+    expect(mockFetch).toHaveBeenCalledWith("/api/members", undefined);
   });
 });
