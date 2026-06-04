@@ -126,7 +126,7 @@ export function RankingsPage() {
           <DialogTrigger asChild>
             <Button>+ Add Watched Movie</Button>
           </DialogTrigger>
-          <DialogContent className="top-4 translate-y-0 sm:top-8 sm:translate-y-0 flex flex-col sm:h-[70vh] h-[80dvh] max-h-[600px]">
+          <DialogContent className="top-4 translate-y-0 sm:top-8 sm:translate-y-0 flex flex-col sm:h-[70vh] h-[80dvh] max-h-150">
             <DialogHeader>
               <DialogTitle>Add Watched Movie</DialogTitle>
             </DialogHeader>
