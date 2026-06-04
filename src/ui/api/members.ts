@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import type { MovieStatus } from "../../types";
 import { apiFetch } from "./client";
 
@@ -16,13 +15,6 @@ export interface MemberMovieData {
 
 export function fetchMembers(): Promise<MemberData[]> {
   return apiFetch<MemberData[]>("/api/members");
-}
-
-export function useMembers() {
-  return useQuery({
-    queryKey: ["members"],
-    queryFn: fetchMembers,
-  });
 }
 
 export function fetchMemberMovies(

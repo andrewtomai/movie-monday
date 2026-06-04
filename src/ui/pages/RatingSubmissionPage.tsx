@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMovie, useSubmitRating } from "../api/movies";
-import { useMembers } from "../api/members";
+import { useMembers } from "../hooks/useMembers";
 
 export function RatingSubmissionPage() {
   const { id } = useParams<{ id: string }>();

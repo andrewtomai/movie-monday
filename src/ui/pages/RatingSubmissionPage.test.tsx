@@ -20,7 +20,7 @@ vi.mock("../api/movies", () => ({
   useSubmitRating: (...args: unknown[]) => mockUseSubmitRating(...args),
 }));
 
-vi.mock("../api/members", () => ({
+vi.mock("../hooks/useMembers", () => ({
   useMembers: (...args: unknown[]) => mockUseMembers(...args),
 }));
 

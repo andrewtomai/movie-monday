@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "./client";
 import type { MovieStatus } from "../../types";
+import { queryKeys } from "./query-keys";
 
 export interface MovieData {
   id: number;
@@ -26,7 +27,7 @@ export function fetchMovieRatings(id: number): Promise<RatingDistribution[]> {
 
 export function useMovie(id: number, options?: { refetchInterval?: number }) {
   return useQuery({
-    queryKey: ["movie", id],
+    queryKey: queryKeys.movies.detail(id),
     queryFn: () => fetchMovie(id),
     ...options,
   });
@@ -34,7 +35,7 @@ export function useMovie(id: number, options?: { refetchInterval?: number }) {
 
 export function useMovieRatings(id: number, options?: { refetchInterval?: number }) {
   return useQuery({
-    queryKey: ["movie", id, "ratings"],
+    queryKey: queryKeys.movies.ratings(id),
     queryFn: () => fetchMovieRatings(id),
     ...options,
   });
@@ -79,8 +80,9 @@ export function useSubmitRating() {
     mutationFn: ({ movieId, memberId, rating }: { movieId: number; memberId: number; rating: number }) =>
       submitRating(movieId, memberId, rating),
     onSuccess: (_data, { movieId }) => {
-      queryClient.invalidateQueries({ queryKey: ["movie", movieId, "ratings"] });
-      queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.movies.ratings(movieId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.movies.detail(movieId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.movies.all });
     },
   });
 }
@@ -90,7 +92,7 @@ export function useRemoveMovieWatched() {
   return useMutation({
     mutationFn: (id: number) => removeMovieWatched(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.movies.all });
     },
   });
 }
@@ -101,7 +103,7 @@ export function useMarkMovieWatched() {
     mutationFn: ({ id, watchedAt }: { id: number; watchedAt: string }) =>
       markMovieWatched(id, watchedAt),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.movies.all });
     },
   });
 }

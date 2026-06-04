@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  fetchMovies,
   useMarkMovieWatched,
   useRemoveMovieWatched,
   type MovieData,
@@ -34,13 +32,9 @@ function formatDate(dateStr: string | null) {
 export function RankingsPage() {
   const navigate = useNavigate();
   const { data } = useMovies(WATCHED);
+  const { data: unwatched } = useMovies(UNWATCHED);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const { data: unwatched } = useQuery({
-    queryKey: ["movies", UNWATCHED],
-    queryFn: () => fetchMovies(UNWATCHED),
-    staleTime: 5 * 60 * 1000,
-  });
   const markWatched = useMarkMovieWatched();
   const removeMovie = useRemoveMovieWatched();
   const [removeDialogMovie, setRemoveDialogMovie] = useState<MovieData | null>(

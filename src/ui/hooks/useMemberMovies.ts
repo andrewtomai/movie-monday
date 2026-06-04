@@ -1,10 +1,11 @@
 import { useQueries } from "@tanstack/react-query";
 import { fetchMemberMovies } from "../api/members";
 import { type MovieStatus } from "../../types";
+import { queryKeys } from "../api/query-keys";
 
 function memberMoviesOptions(id: number, status?: MovieStatus) {
   return {
-    queryKey: ["member-movies", id, status] as const,
+    queryKey: queryKeys.members.movies(id, status),
     queryFn: () => fetchMemberMovies(id, status),
     staleTime: 5 * 60 * 1000,
   };
