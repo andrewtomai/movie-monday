@@ -24,6 +24,24 @@ export function markMovieWatched(id: number, watchedAt: string): Promise<{ succe
   });
 }
 
+export function removeMovieWatched(id: number): Promise<{ success: boolean }> {
+  return apiFetch(`/api/movies/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ watchedAt: null }),
+  });
+}
+
+export function useRemoveMovieWatched() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => removeMovieWatched(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["movies"] });
+    },
+  });
+}
+
 export function useMarkMovieWatched() {
   const queryClient = useQueryClient();
   return useMutation({

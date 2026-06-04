@@ -54,9 +54,9 @@ app.get("/", async (c) => {
 app.patch("/:id", async (c) => {
   const db = drizzle(c.env.DB);
   const id = Number(c.req.param("id"));
-  const { watchedAt } = await c.req.json<{ watchedAt: string }>();
+  const { watchedAt } = await c.req.json<{ watchedAt: string | null }>();
 
-  if (!watchedAt) {
+  if (watchedAt === undefined) {
     return c.json({ error: "watchedAt is required" }, 400);
   }
 

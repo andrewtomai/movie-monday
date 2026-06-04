@@ -122,5 +122,19 @@ describe("movies", () => {
       const body = await res.json();
       expect(body.error).toBe("watchedAt is required");
     });
+
+    it("returns 200 when watchedAt is null (unwatch)", async () => {
+      const res = await app.request(
+        "/api/movies/1",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ watchedAt: null }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({ success: true });
+    });
   });
 });
