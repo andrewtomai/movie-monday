@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8ceb28b4-e5b1-4803-8022-0ecdd122cf51",
+  "id": "f6320516-7881-42ff-ac50-c566124356ec",
   "prevId": "d0b9eaee-5a83-4bde-8f30-674036f55ce5",
   "tables": {
     "members": {
@@ -150,13 +150,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "CURRENT_TIMESTAMP"
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -164,8 +157,7 @@
           "name": "ratings_member_movie_active",
           "columns": [
             "member_id",
-            "movie_id",
-            "deleted_at"
+            "movie_id"
           ],
           "isUnique": true
         }
