@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AttendeeSelectPage } from './pages/AttendeeSelectPage'
 import { RankingsPage } from './pages/RankingsPage'
+import { RatingSubmissionPage } from './pages/RatingSubmissionPage'
 import { RatingSummaryPage } from './pages/RatingSummaryPage'
 import { RollingPoolPage } from './pages/RollingPoolPage'
 import { VotingPoolPage } from './pages/VotingPoolPage'
@@ -11,6 +12,7 @@ export default function App() {
       <Route path="/" element={<AttendeeSelectPage />} />
       <Route path="/rankings" element={<RankingsPage />} />
       <Route path="/movie/:id" element={<RatingSummaryPage />} />
+      <Route path="/movie/:id/rate" element={<RatingSubmissionPage />} />
       <Route path="/rolling-pool" element={<RollingPoolPage />} />
       <Route path="/voting-pool" element={<VotingPoolPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />

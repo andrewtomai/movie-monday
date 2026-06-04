@@ -53,9 +53,12 @@ const mockQueryBuilder: any = {
   build: vi.fn(() => mockQueryBuilder),
   groupBy: vi.fn(() => mockQueryBuilder),
   orderBy: vi.fn(() => mockQueryBuilder),
+  limit: vi.fn(() => mockQueryBuilder),
   then: (onfulfilled: (value: unknown) => unknown, onrejected?: (reason: unknown) => unknown) =>
     Promise.resolve(resolveData).then(onfulfilled, onrejected),
 };
+
+let insertResolve: unknown = undefined;
 
 vi.mock("drizzle-orm/d1", () => ({
   drizzle: () => ({
@@ -65,6 +68,11 @@ vi.mock("drizzle-orm/d1", () => ({
     update: vi.fn(() => ({
       set: vi.fn(() => ({
         where: vi.fn(() => Promise.resolve({ success: true })),
+      })),
+    })),
+    insert: vi.fn(() => ({
+      values: vi.fn(() => ({
+        onConflictDoUpdate: vi.fn(() => Promise.resolve(insertResolve)),
       })),
     })),
   }),
@@ -187,6 +195,99 @@ describe("movies", () => {
       const res = await app.request("/api/movies/1/ratings", {}, { DB: {} as D1Database });
       expect(res.status).toBe(200);
       expect(await res.json()).toEqual(mockRatingsRows);
+    });
+  });
+
+  describe("POST /api/movies/:id/ratings", () => {
+    beforeEach(() => {
+      insertResolve = undefined;
+    });
+
+    it("creates a new rating", async () => {
+      resolveData = mockMovieRows;
+      const res = await app.request(
+        "/api/movies/1/ratings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: 1, rating: 8 }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({ success: true });
+    });
+
+    it("updates an existing rating (upsert)", async () => {
+      resolveData = mockMovieRows;
+      const first = await app.request(
+        "/api/movies/1/ratings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: 1, rating: 8 }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(first.status).toBe(200);
+
+      const second = await app.request(
+        "/api/movies/1/ratings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: 1, rating: 9 }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(second.status).toBe(200);
+      expect(await second.json()).toEqual({ success: true });
+    });
+
+    it("returns 400 when memberId is missing", async () => {
+      const res = await app.request(
+        "/api/movies/1/ratings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rating: 8 }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error).toBe("memberId and rating are required");
+    });
+
+    it("returns 400 when rating is missing", async () => {
+      const res = await app.request(
+        "/api/movies/1/ratings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: 1 }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error).toBe("memberId and rating are required");
+    });
+
+    it("returns 404 for non-existent movie", async () => {
+      resolveData = [];
+      const res = await app.request(
+        "/api/movies/999/ratings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ memberId: 1, rating: 8 }),
+        },
+        { DB: {} as D1Database },
+      );
+      expect(res.status).toBe(404);
+      const body = await res.json();
+      expect(body.error).toBe("Movie not found");
     });
   });
 });

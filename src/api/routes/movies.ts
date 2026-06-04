@@ -104,6 +104,39 @@ app.get("/:id/ratings", async (c) => {
   return c.json(distribution);
 });
 
+app.post("/:id/ratings", async (c) => {
+  const db = drizzle(c.env.DB);
+  const movieId = Number(c.req.param("id"));
+  const { memberId, rating } = await c.req.json<{
+    memberId?: number;
+    rating?: number;
+  }>();
+
+  if (memberId == null || rating == null) {
+    return c.json({ error: "memberId and rating are required" }, 400);
+  }
+
+  const movieExists = await db
+    .select({ id: movies.id })
+    .from(movies)
+    .where(eq(movies.id, movieId))
+    .limit(1);
+
+  if (!movieExists.length) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  await db
+    .insert(ratings)
+    .values({ movieId, memberId, rating })
+    .onConflictDoUpdate({
+      target: [ratings.memberId, ratings.movieId],
+      set: { rating },
+    });
+
+  return c.json({ success: true });
+});
+
 app.patch("/:id", async (c) => {
   const db = drizzle(c.env.DB);
   const id = Number(c.req.param("id"));

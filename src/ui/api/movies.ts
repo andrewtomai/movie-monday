@@ -61,6 +61,30 @@ export function removeMovieWatched(id: number): Promise<{ success: boolean }> {
   });
 }
 
+export function submitRating(
+  movieId: number,
+  memberId: number,
+  rating: number,
+): Promise<{ success: boolean }> {
+  return apiFetch(`/api/movies/${movieId}/ratings`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ memberId, rating }),
+  });
+}
+
+export function useSubmitRating() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ movieId, memberId, rating }: { movieId: number; memberId: number; rating: number }) =>
+      submitRating(movieId, memberId, rating),
+    onSuccess: (_data, { movieId }) => {
+      queryClient.invalidateQueries({ queryKey: ["movie", movieId, "ratings"] });
+      queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
+    },
+  });
+}
+
 export function useRemoveMovieWatched() {
   const queryClient = useQueryClient();
   return useMutation({
