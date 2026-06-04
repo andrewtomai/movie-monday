@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useMovies } from "../hooks/useMovies";
 import { Button } from "@/components/ui/button";
 import { MovieCard } from "../components/MovieCard";
+import { WATCHED } from "../../types";
 
 function formatDate(dateStr: string | null) {
   if (!dateStr) return "";
@@ -12,7 +13,7 @@ function formatDate(dateStr: string | null) {
 
 export function RankingsPage() {
   const navigate = useNavigate();
-  const { data } = useMovies("watched");
+  const { data } = useMovies(WATCHED);
 
   const sorted = (data ?? [])
     .filter((m) => m.rating.avg != null)
