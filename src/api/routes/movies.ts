@@ -51,6 +51,59 @@ app.get("/", async (c) => {
   );
 });
 
+app.get("/:id", async (c) => {
+  const db = drizzle(c.env.DB);
+  const id = Number(c.req.param("id"));
+
+  const result = await db
+    .select({
+      id: movies.id,
+      title: movies.title,
+      nominatedBy: members.name,
+      watchedAt: movies.watchedAt,
+      avgRating: avg(ratings.rating),
+      ratingCount: count(ratings.id),
+    })
+    .from(movies)
+    .leftJoin(members, eq(movies.nominatedBy, members.id))
+    .leftJoin(ratings, eq(movies.id, ratings.movieId))
+    .where(eq(movies.id, id))
+    .groupBy(movies.id);
+
+  const movie = result[0];
+  if (!movie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  return c.json({
+    id: movie.id,
+    title: movie.title,
+    nominatedBy: movie.nominatedBy,
+    watchedAt: movie.watchedAt,
+    rating: {
+      avg: movie.avgRating ? Number(movie.avgRating) : null,
+      count: movie.ratingCount,
+    },
+  });
+});
+
+app.get("/:id/ratings", async (c) => {
+  const db = drizzle(c.env.DB);
+  const id = Number(c.req.param("id"));
+
+  const distribution = await db
+    .select({
+      rating: ratings.rating,
+      count: count(ratings.id),
+    })
+    .from(ratings)
+    .where(eq(ratings.movieId, id))
+    .groupBy(ratings.rating)
+    .orderBy(ratings.rating);
+
+  return c.json(distribution);
+});
+
 app.patch("/:id", async (c) => {
   const db = drizzle(c.env.DB);
   const id = Number(c.req.param("id"));

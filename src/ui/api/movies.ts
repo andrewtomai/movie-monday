@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "./client";
 import type { MovieStatus } from "../../types";
 
@@ -9,6 +9,35 @@ export interface MovieData {
   watchedAt: string | null;
   createdAt: string;
   rating: { avg: number | null; count: number };
+}
+
+export function fetchMovie(id: number): Promise<MovieData> {
+  return apiFetch<MovieData>(`/api/movies/${id}`);
+}
+
+export interface RatingDistribution {
+  rating: number;
+  count: number;
+}
+
+export function fetchMovieRatings(id: number): Promise<RatingDistribution[]> {
+  return apiFetch<RatingDistribution[]>(`/api/movies/${id}/ratings`);
+}
+
+export function useMovie(id: number, options?: { refetchInterval?: number }) {
+  return useQuery({
+    queryKey: ["movie", id],
+    queryFn: () => fetchMovie(id),
+    ...options,
+  });
+}
+
+export function useMovieRatings(id: number, options?: { refetchInterval?: number }) {
+  return useQuery({
+    queryKey: ["movie", id, "ratings"],
+    queryFn: () => fetchMovieRatings(id),
+    ...options,
+  });
 }
 
 export function fetchMovies(status?: MovieStatus): Promise<MovieData[]> {

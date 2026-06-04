@@ -5,11 +5,21 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import { useStore } from "./store";
 
+vi.mock("./api/movies", async () => {
+  const actual = await vi.importActual<typeof import("./api/movies")>("./api/movies");
+  return {
+    ...actual,
+    useMovie: vi.fn(),
+    useMovieRatings: vi.fn(),
+  };
+});
+
 vi.mock("./hooks/useMembers", () => ({
   useMembers: vi.fn(),
 }));
 
 import { useMembers } from "./hooks/useMembers";
+import { useMovie, useMovieRatings } from "./api/movies";
 
 const mockMembers = [
   { id: 1, name: "Alice" },
@@ -35,6 +45,15 @@ beforeEach(() => {
   useStore.setState({ selectedAttendees: [], rollingPool: [] });
   vi.mocked(useMembers).mockReturnValue({
     data: mockMembers,
+    isLoading: false,
+  } as any);
+  vi.mocked(useMovie).mockReturnValue({
+    data: { id: 42, title: "Movie 42", nominatedBy: "Alice", watchedAt: null, createdAt: "2026-01-01", rating: { avg: 8.5, count: 10 } },
+    isLoading: false,
+    isError: false,
+  } as any);
+  vi.mocked(useMovieRatings).mockReturnValue({
+    data: Array.from({ length: 10 }, (_, i) => ({ rating: i + 1, count: 0 })),
     isLoading: false,
   } as any);
 });
@@ -70,8 +89,7 @@ describe("App routing", () => {
   it("renders RatingSummaryPage at /movie/:id", () => {
     renderWithRouter(["/movie/42"]);
     expect(screen.getByText("Movie 42")).toBeInTheDocument();
-    expect(
-      screen.getByText("Rating summary coming soon"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("8.50")).toBeInTheDocument();
+    expect(screen.getByText("10 ratings")).toBeInTheDocument();
   });
 });

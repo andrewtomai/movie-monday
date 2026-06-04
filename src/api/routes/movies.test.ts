@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 import type { D1Database } from "@cloudflare/workers-types";
 
@@ -32,11 +32,29 @@ const mockMovieRows = [
   },
 ];
 
+const mockRatingsRows = [
+  { rating: 1, count: 0 },
+  { rating: 2, count: 0 },
+  { rating: 3, count: 0 },
+  { rating: 4, count: 0 },
+  { rating: 5, count: 0 },
+  { rating: 6, count: 0 },
+  { rating: 7, count: 3 },
+  { rating: 8, count: 5 },
+  { rating: 9, count: 3 },
+  { rating: 10, count: 1 },
+];
+
+let resolveData: Array<unknown> = mockMovieRows;
+
 const mockQueryBuilder: any = {
   leftJoin: vi.fn(() => mockQueryBuilder),
   where: vi.fn(() => mockQueryBuilder),
   build: vi.fn(() => mockQueryBuilder),
-  groupBy: vi.fn(() => Promise.resolve(mockMovieRows)),
+  groupBy: vi.fn(() => mockQueryBuilder),
+  orderBy: vi.fn(() => mockQueryBuilder),
+  then: (onfulfilled: (value: unknown) => unknown, onrejected?: (reason: unknown) => unknown) =>
+    Promise.resolve(resolveData).then(onfulfilled, onrejected),
 };
 
 vi.mock("drizzle-orm/d1", () => ({
@@ -54,6 +72,11 @@ vi.mock("drizzle-orm/d1", () => ({
 
 const { default: moviesRoutes } = await import("./movies");
 const app = new Hono().route("/api/movies", moviesRoutes);
+
+beforeEach(() => {
+  resolveData = mockMovieRows;
+  vi.clearAllMocks();
+});
 
 describe("movies", () => {
   it("GET /api/movies returns all movies with nested rating", async () => {
@@ -135,6 +158,35 @@ describe("movies", () => {
       );
       expect(res.status).toBe(200);
       expect(await res.json()).toEqual({ success: true });
+    });
+  });
+
+  describe("GET /api/movies/:id", () => {
+    it("returns movie with rating summary", async () => {
+      const res = await app.request("/api/movies/1", {}, { DB: {} as D1Database });
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({
+        id: 1,
+        title: "10 Things I Hate About You",
+        nominatedBy: "Alex B",
+        watchedAt: null,
+        rating: { avg: null, count: 0 },
+      });
+    });
+
+    it("returns 404 for non-existent movie", async () => {
+      resolveData = [];
+      const res = await app.request("/api/movies/999", {}, { DB: {} as D1Database });
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe("GET /api/movies/:id/ratings", () => {
+    it("returns rating distribution", async () => {
+      resolveData = mockRatingsRows;
+      const res = await app.request("/api/movies/1/ratings", {}, { DB: {} as D1Database });
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual(mockRatingsRows);
     });
   });
 });
