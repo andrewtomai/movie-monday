@@ -146,4 +146,14 @@ describe("RankingsPage", () => {
     await userEvent.click(screen.getByText("← Home"));
     expect(mockNavigate).toHaveBeenCalledWith("/");
   });
+
+  it("navigates to movie page when a card is clicked", async () => {
+    vi.mocked(useMovies).mockReturnValue({
+      data: mockMoviesData,
+    } as any);
+
+    render(<RankingsPage />, { wrapper: createWrapper() });
+    await userEvent.click(screen.getByText("Baby Driver"));
+    expect(mockNavigate).toHaveBeenCalledWith("/movie/1");
+  });
 });

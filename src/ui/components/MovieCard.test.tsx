@@ -70,6 +70,29 @@ describe("MovieCard", () => {
     await userEvent.click(screen.getByText("Inception"));
   });
 
+  it("calls onClick when card is clicked", async () => {
+    const onClick = vi.fn();
+    render(<MovieCard title="Inception" onClick={onClick} />);
+    await userEvent.click(screen.getByText("Inception"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onClick instead of onToggle when both are provided", async () => {
+    const onClick = vi.fn();
+    const onToggle = vi.fn();
+    render(
+      <MovieCard
+        title="Inception"
+        showCheckbox
+        onClick={onClick}
+        onToggle={onToggle}
+      />,
+    );
+    await userEvent.click(screen.getByText("Inception"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onToggle).not.toHaveBeenCalled();
+  });
+
   it("applies checked styling when checked is true", () => {
     const { container } = render(
       <MovieCard title="Inception" showCheckbox checked onToggle={() => {}} />,

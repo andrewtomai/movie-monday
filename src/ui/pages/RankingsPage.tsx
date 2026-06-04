@@ -85,6 +85,7 @@ export function RankingsPage() {
         {sorted.map((movie, idx) => (
           <MovieCard
             key={movie.id}
+            onClick={() => navigate(`/movie/${movie.id}`)}
             title={movie.title}
             subtitle={`— ${movie.nominatedBy} · ${formatDate(movie.watchedAt)}`}
             rank={idx + 1}

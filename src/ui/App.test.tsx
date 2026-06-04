@@ -66,4 +66,12 @@ describe("App routing", () => {
       screen.getByText("Misc. Movie Monday"),
     ).toBeInTheDocument();
   });
+
+  it("renders RatingSummaryPage at /movie/:id", () => {
+    renderWithRouter(["/movie/42"]);
+    expect(screen.getByText("Movie 42")).toBeInTheDocument();
+    expect(
+      screen.getByText("Rating summary coming soon"),
+    ).toBeInTheDocument();
+  });
 });

@@ -12,6 +12,7 @@ interface MovieCardProps {
   votes?: number
   onVote?: (delta: 1 | -1) => void
   rightContent?: React.ReactNode
+  onClick?: () => void
 }
 
 export function MovieCard({
@@ -25,10 +26,11 @@ export function MovieCard({
   votes,
   onVote,
   rightContent,
+  onClick,
 }: MovieCardProps) {
   return (
     <div
-      onClick={onToggle && showCheckbox ? onToggle : undefined}
+      onClick={onClick ?? (onToggle && showCheckbox ? onToggle : undefined)}
       className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition-all ${
         checked
           ? 'border-primary bg-accent ring-2 ring-primary/20'
