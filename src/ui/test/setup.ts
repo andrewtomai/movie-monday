@@ -5,3 +5,7 @@ import { afterEach, vi } from "vitest";
 afterEach(() => cleanup());
 
 Element.prototype.scrollIntoView = vi.fn();
+Element.prototype.hasPointerCapture = vi.fn();
+Element.prototype.setPointerCapture = vi.fn();
+Element.prototype.releasePointerCapture = vi.fn();
+

@@ -95,11 +95,13 @@ describe("RatingSubmissionPage", () => {
     expect(screen.getByText("Submit rating")).toBeInTheDocument();
   });
 
-  it("renders member names in dropdown", () => {
+  it("renders member names in dropdown when opened", async () => {
     render(<RatingSubmissionPage />, { wrapper: createWrapper("/movie/1/rate") });
-    expect(screen.getByText("Alice")).toBeInTheDocument();
-    expect(screen.getByText("Bob")).toBeInTheDocument();
-    expect(screen.getByText("Charlie")).toBeInTheDocument();
+    const input = screen.getByPlaceholderText("Select your name");
+    await userEvent.click(input);
+    expect(screen.getByRole("option", { name: "Alice" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Bob" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Charlie" })).toBeInTheDocument();
   });
 
   it("submit button is disabled until member and rating selected", () => {
@@ -111,11 +113,11 @@ describe("RatingSubmissionPage", () => {
     const user = userEvent.setup();
     render(<RatingSubmissionPage />, { wrapper: createWrapper("/movie/1/rate") });
 
-    const memberSelect = screen.getByLabelText("Who are you?");
-    await user.selectOptions(memberSelect, "1");
+    await user.click(screen.getByPlaceholderText("Select your name"));
+    await user.click(screen.getByRole("option", { name: "Alice" }));
 
-    const ratingSelect = screen.getByLabelText("Rating");
-    await user.selectOptions(ratingSelect, "8");
+    await user.click(screen.getByRole("combobox", { name: "Rating" }));
+    await user.click(screen.getByRole("option", { name: "8" }));
 
     expect(screen.getByText("Submit rating")).toBeEnabled();
   });
@@ -124,8 +126,12 @@ describe("RatingSubmissionPage", () => {
     const user = userEvent.setup();
     render(<RatingSubmissionPage />, { wrapper: createWrapper("/movie/1/rate") });
 
-    await user.selectOptions(screen.getByLabelText("Who are you?"), "1");
-    await user.selectOptions(screen.getByLabelText("Rating"), "8");
+    await user.click(screen.getByPlaceholderText("Select your name"));
+    await user.click(screen.getByRole("option", { name: "Alice" }));
+
+    await user.click(screen.getByRole("combobox", { name: "Rating" }));
+    await user.click(screen.getByRole("option", { name: "8" }));
+
     await user.click(screen.getByText("Submit rating"));
 
     expect(mockMutate).toHaveBeenCalledWith(
@@ -138,8 +144,12 @@ describe("RatingSubmissionPage", () => {
     const user = userEvent.setup();
     const { rerender } = render(<RatingSubmissionPage />, { wrapper: createWrapper("/movie/1/rate") });
 
-    await user.selectOptions(screen.getByLabelText("Who are you?"), "1");
-    await user.selectOptions(screen.getByLabelText("Rating"), "8");
+    await user.click(screen.getByPlaceholderText("Select your name"));
+    await user.click(screen.getByRole("option", { name: "Alice" }));
+
+    await user.click(screen.getByRole("combobox", { name: "Rating" }));
+    await user.click(screen.getByRole("option", { name: "8" }));
+
     await user.click(screen.getByText("Submit rating"));
 
     mockMutate.mock.calls[0][1].onSuccess();
@@ -154,7 +164,11 @@ describe("RatingSubmissionPage", () => {
 
     rerender(<RatingSubmissionPage />);
 
-    await user.selectOptions(screen.getByLabelText("Who are you?"), "1");
+    await user.click(screen.getByPlaceholderText("Select your name"));
+    await user.click(screen.getByRole("option", { name: "Bob" }));
+
+    await user.click(screen.getByPlaceholderText("Select your name"));
+    await user.click(screen.getByRole("option", { name: "Alice" }));
 
     expect(screen.getByText("Update rating")).toBeInTheDocument();
   });

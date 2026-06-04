@@ -2,6 +2,21 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMovie, useSubmitRating } from "../api/movies";
 import { useMembers } from "../hooks/useMembers";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function RatingSubmissionPage() {
   const { id } = useParams<{ id: string }>();
@@ -14,10 +29,14 @@ export function RatingSubmissionPage() {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [submittedRatings, setSubmittedRatings] = useState<Record<number, number>>({});
 
-  const handleMemberChange = (memberId: number) => {
-    setSelectedMemberId(memberId);
-    if (submittedRatings[memberId] !== undefined) {
-      setSelectedRating(submittedRatings[memberId]);
+  const memberNames = members?.map((m) => m.name) ?? [];
+  const selectedName = members?.find((m) => m.id === selectedMemberId)?.name ?? null;
+
+  const handleNameChange = (name: string | null) => {
+    const member = members?.find((m) => m.name === name) ?? null;
+    setSelectedMemberId(member?.id ?? null);
+    if (member && submittedRatings[member.id] !== undefined) {
+      setSelectedRating(submittedRatings[member.id]);
     } else {
       setSelectedRating(null);
     }
@@ -63,45 +82,47 @@ export function RatingSubmissionPage() {
 
       <div className="space-y-6">
         <div>
-          <label htmlFor="member" className="mb-2 block text-sm font-medium text-foreground">
+          <label className="mb-2 block text-sm font-medium text-foreground">
             Who are you?
           </label>
-          <select
-            id="member"
-            className="w-full rounded-lg border bg-background px-3 py-2 text-foreground"
-            value={selectedMemberId ?? ""}
-            onChange={(e) => handleMemberChange(Number(e.target.value))}
+          <Combobox
+            items={memberNames}
+            value={selectedName}
+            onValueChange={handleNameChange}
           >
-            <option value="" disabled>
-              Select your name
-            </option>
-            {members?.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
+            <ComboboxInput placeholder="Select your name" aria-label="Member" />
+            <ComboboxContent>
+              <ComboboxEmpty>No matches found.</ComboboxEmpty>
+              <ComboboxList>
+                {(name) => (
+                  <ComboboxItem key={name} value={name}>
+                    {name}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
         </div>
 
         <div>
-          <label htmlFor="rating" className="mb-2 block text-sm font-medium text-foreground">
+          <label className="mb-2 block text-sm font-medium text-foreground">
             Rating
           </label>
-          <select
-            id="rating"
-            className="w-full rounded-lg border bg-background px-3 py-2 text-foreground"
-            value={selectedRating ?? ""}
-            onChange={(e) => setSelectedRating(Number(e.target.value))}
+          <Select
+            value={selectedRating?.toString() ?? ""}
+            onValueChange={(v) => setSelectedRating(Number(v))}
           >
-            <option value="" disabled>
-              Select a rating
-            </option>
-            {Array.from({ length: 10 }, (_, i) => i + 1).map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full" aria-label="Rating">
+              <SelectValue placeholder="Select a rating" />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: 10 }, (_, i) => i + 1).map((r) => (
+                <SelectItem key={r} value={r.toString()}>
+                  {r.toString()}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <button
