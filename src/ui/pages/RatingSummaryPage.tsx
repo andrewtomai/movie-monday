@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
+import { toast } from "sonner";
 import { useMovie, useMovieRatings } from "../api/movies";
 
 export function RatingSummaryPage() {
@@ -9,8 +10,9 @@ export function RatingSummaryPage() {
     data: movie,
     isLoading: movieLoading,
     isError: movieError,
-  } = useMovie(movieId, { refetchInterval: 5_000 });
-  const { data: ratings } = useMovieRatings(movieId, { refetchInterval: 5_000 });
+    refetch: refetchMovie,
+  } = useMovie(movieId);
+  const { data: ratings, refetch: refetchRatings } = useMovieRatings(movieId);
 
   if (movieLoading) {
     return (
@@ -44,6 +46,15 @@ export function RatingSummaryPage() {
         <p className="mt-2 text-sm text-muted-foreground">
           {movie.rating.count} {movie.rating.count === 1 ? "rating" : "ratings"}
         </p>
+        <button
+          onClick={async () => {
+            await Promise.all([refetchMovie(), refetchRatings()]);
+            toast.success("Ratings refreshed");
+          }}
+          className="mt-4 cursor-pointer rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-secondary"
+        >
+          Refresh Ratings
+        </button>
       </div>
 
       <div className="mb-10 space-y-1.5">
