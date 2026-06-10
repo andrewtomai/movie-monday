@@ -1,0 +1,1 @@
+UPDATE members SET name = 'Nibel' WHERE name = 'Nible';

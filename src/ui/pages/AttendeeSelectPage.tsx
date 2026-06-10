@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import { useMembers } from "../hooks/useMembers";
+import type { MemberData } from "../api/members";
 import { SearchableMultiSelect } from "../components/SearchableMultiSelect";
 import { PageLayout } from "../components/PageLayout";
 import { Button } from "@/components/ui/button";
 
 export function AttendeeSelectPage() {
   const navigate = useNavigate();
-  const { data: members, isLoading } = useMembers();
+  const { data: members, isLoading } = useMembers("member");
   const selectedAttendees = useStore((s) => s.selectedAttendees);
   const setAttendees = useStore((s) => s.setAttendees);
   const reset = useStore((s) => s.reset);
@@ -19,7 +20,7 @@ export function AttendeeSelectPage() {
     if (!members) return;
     const attendees = names
       .map((name) => members.find((m) => m.name === name))
-      .filter((m): m is { id: number; name: string } => m !== undefined);
+      .filter((m): m is MemberData => m !== undefined);
     setAttendees(attendees);
   };
 

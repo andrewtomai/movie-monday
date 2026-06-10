@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMovie, useSubmitRating } from "../api/movies";
-import { useMembers } from "../hooks/useMembers";
+import { useMembers, useCreateMember } from "../hooks/useMembers";
 import { PageLayout } from "../components/PageLayout";
+import { SegmentedControl } from "../components/SegmentedControl";
 import {
   Combobox,
   ComboboxContent,
@@ -19,13 +20,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+type RaterTab = "returning" | "new";
+
 export function RatingSubmissionPage() {
   const { id } = useParams<{ id: string }>();
   const movieId = Number(id);
   const { data: movie, isLoading: movieLoading, isError: movieError } = useMovie(movieId);
   const { data: members } = useMembers();
   const submitRating = useSubmitRating();
+  const createMember = useCreateMember();
 
+  const [raterTab, setRaterTab] = useState<RaterTab>("returning");
+  const [guestName, setGuestName] = useState("");
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [submittedRatings, setSubmittedRatings] = useState<Record<number, number>>({});
@@ -43,6 +49,21 @@ export function RatingSubmissionPage() {
     }
   };
 
+  const handleAddGuest = () => {
+    const name = guestName.trim();
+    if (!name) return;
+    createMember.mutate(
+      { name, role: "guest" },
+      {
+        onSuccess: (data) => {
+          setSelectedMemberId(data.id);
+          setGuestName("");
+          setRaterTab("returning");
+        },
+      },
+    );
+  };
+
   const handleSubmit = async () => {
     if (selectedMemberId == null || selectedRating == null) return;
     submitRating.mutate(
@@ -55,7 +76,7 @@ export function RatingSubmissionPage() {
     );
   };
 
-  const isSubmitting = submitRating.isPending;
+  const isSubmitting = submitRating.isPending || createMember.isPending;
   const isSuccess = submitRating.isSuccess;
   const isReVote = selectedMemberId != null && submittedRatings[selectedMemberId] !== undefined;
 
@@ -86,23 +107,64 @@ export function RatingSubmissionPage() {
           <label className="mb-2 block text-sm font-medium text-foreground">
             Who are you?
           </label>
-          <Combobox
-            items={memberNames}
-            value={selectedName}
-            onValueChange={handleNameChange}
-          >
-            <ComboboxInput placeholder="Select your name" aria-label="Member" />
-            <ComboboxContent>
-              <ComboboxEmpty>No matches found.</ComboboxEmpty>
-              <ComboboxList>
-                {(name) => (
-                  <ComboboxItem key={name} value={name}>
-                    {name}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
+
+          <SegmentedControl
+            className="mb-4"
+            options={[
+              { value: "returning", label: "Returning" },
+              { value: "new", label: "New guest" },
+            ]}
+            value={raterTab}
+            onChange={(v) => setRaterTab(v as RaterTab)}
+          />
+
+          {raterTab === "returning" ? (
+            <Combobox
+              items={memberNames}
+              value={selectedName}
+              onValueChange={handleNameChange}
+            >
+              <ComboboxInput placeholder="Select your name" aria-label="Member" />
+              <ComboboxContent>
+                <ComboboxEmpty>No matches found.</ComboboxEmpty>
+                <ComboboxList>
+                  {(name) => (
+                    <ComboboxItem key={name} value={name}>
+                      {name}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
+          ) : (
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                placeholder="Enter your name"
+                className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                aria-label="Guest name"
+              />
+              <button
+                type="button"
+                className={`w-full rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  guestName.trim()
+                    ? "bg-foreground text-background hover:opacity-90"
+                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                }`}
+                disabled={!guestName.trim() || createMember.isPending}
+                onClick={handleAddGuest}
+              >
+                {createMember.isPending ? "Adding..." : "Add me as a guest"}
+              </button>
+              {createMember.isError && (
+                <p className="text-sm text-destructive">
+                  {createMember.error?.message ?? "Failed to add guest"}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div>

@@ -4,6 +4,13 @@ import { apiFetch } from "./client";
 export interface MemberData {
   id: number;
   name: string;
+  role: string;
+}
+
+export interface MemberCreateData {
+  id: number;
+  name: string;
+  role: string;
 }
 
 export interface MemberMovieData {
@@ -13,8 +20,20 @@ export interface MemberMovieData {
   createdAt: string;
 }
 
-export function fetchMembers(): Promise<MemberData[]> {
-  return apiFetch<MemberData[]>("/api/members");
+export function fetchMembers(role?: string): Promise<MemberData[]> {
+  const params = role ? `?role=${role}` : "";
+  return apiFetch<MemberData[]>(`/api/members${params}`);
+}
+
+export function createMember(
+  name: string,
+  role?: string,
+): Promise<MemberCreateData> {
+  return apiFetch<MemberCreateData>("/api/members", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, role }),
+  });
 }
 
 export function fetchMemberMovies(

@@ -8,6 +8,7 @@ const mockMutate = vi.fn();
 const mockUseMovie = vi.fn();
 const mockUseMembers = vi.fn();
 const mockUseSubmitRating = vi.fn();
+const mockUseCreateMember = vi.fn();
 const mockUseParams = vi.fn();
 
 vi.mock("react-router-dom", async () => {
@@ -22,6 +23,7 @@ vi.mock("../api/movies", () => ({
 
 vi.mock("../hooks/useMembers", () => ({
   useMembers: (...args: unknown[]) => mockUseMembers(...args),
+  useCreateMember: (...args: unknown[]) => mockUseCreateMember(...args),
 }));
 
 const mockMovie = {
@@ -34,9 +36,9 @@ const mockMovie = {
 };
 
 const mockMembers = [
-  { id: 1, name: "Alice" },
-  { id: 2, name: "Bob" },
-  { id: 3, name: "Charlie" },
+  { id: 1, name: "Alice", role: "member" },
+  { id: 2, name: "Bob", role: "member" },
+  { id: 3, name: "Charlie", role: "member" },
 ];
 
 beforeEach(() => {
@@ -57,6 +59,13 @@ beforeEach(() => {
     mutate: mockMutate,
     isPending: false,
     isSuccess: false,
+    isError: false,
+    error: null,
+  });
+
+  mockUseCreateMember.mockReturnValue({
+    mutate: vi.fn(),
+    isPending: false,
     isError: false,
     error: null,
   });
