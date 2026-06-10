@@ -57,18 +57,16 @@ export function RollingPoolPage() {
         Rolling Pool
       </h2>
       <p className="mb-6 text-sm text-muted-foreground">
-        Check the numbers that were rolled
+        Select the movies to vote on
       </p>
 
       <div className="space-y-3">
-        {rollingPool.map((m, i) => (
+        {rollingPool.map((m) => (
           <MovieCard
             key={m.title}
             title={m.title}
-            assignedNumber={i + 1}
             checked={m.isChecked}
-            onToggle={() => toggleChecked(m.title)}
-            showCheckbox
+            onClick={() => toggleChecked(m.title)}
           />
         ))}
       </div>
