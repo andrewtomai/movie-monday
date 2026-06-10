@@ -60,6 +60,7 @@ export function RankingsPage() {
           toast.success(`"${movie.title}" marked as watched`);
           setDialogOpen(false);
           setSearch("");
+          navigate(`/movie/${movie.id}`);
         },
         onError: (err) => {
           toast.error(

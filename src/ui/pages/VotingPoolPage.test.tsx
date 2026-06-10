@@ -39,9 +39,7 @@ describe("VotingPoolPage", () => {
 
   it("starts each movie at 0 votes", () => {
     useStore.setState({
-      rollingPool: [
-        { title: "Tenet", isChecked: true },
-      ],
+      rollingPool: [{ title: "Tenet", isChecked: true }],
     });
 
     render(<VotingPoolPage />, { wrapper: createWrapper() });
@@ -51,9 +49,7 @@ describe("VotingPoolPage", () => {
 
   it("increments vote when + is clicked", async () => {
     useStore.setState({
-      rollingPool: [
-        { title: "Tenet", isChecked: true },
-      ],
+      rollingPool: [{ title: "Tenet", isChecked: true }],
     });
 
     render(<VotingPoolPage />, { wrapper: createWrapper() });
@@ -63,9 +59,7 @@ describe("VotingPoolPage", () => {
 
   it("decrements vote when − is clicked", async () => {
     useStore.setState({
-      rollingPool: [
-        { title: "Tenet", isChecked: true },
-      ],
+      rollingPool: [{ title: "Tenet", isChecked: true }],
     });
 
     render(<VotingPoolPage />, { wrapper: createWrapper() });
@@ -80,9 +74,7 @@ describe("VotingPoolPage", () => {
 
   it("removes vote entry when it drops to 0 or below", async () => {
     useStore.setState({
-      rollingPool: [
-        { title: "Tenet", isChecked: true },
-      ],
+      rollingPool: [{ title: "Tenet", isChecked: true }],
     });
 
     render(<VotingPoolPage />, { wrapper: createWrapper() });
@@ -108,9 +100,7 @@ describe("VotingPoolPage", () => {
 
   it("navigates back to rolling-pool on ← Back", async () => {
     useStore.setState({
-      rollingPool: [
-        { title: "Tenet", isChecked: true },
-      ],
+      rollingPool: [{ title: "Tenet", isChecked: true }],
     });
 
     render(<VotingPoolPage />, { wrapper: createWrapper() });
@@ -118,15 +108,13 @@ describe("VotingPoolPage", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/rolling-pool");
   });
 
-  it("navigates home on Start over", async () => {
+  it("navigates home on 'Home'", async () => {
     useStore.setState({
-      rollingPool: [
-        { title: "Tenet", isChecked: true },
-      ],
+      rollingPool: [{ title: "Tenet", isChecked: true }],
     });
 
     render(<VotingPoolPage />, { wrapper: createWrapper() });
-    await userEvent.click(screen.getByText("Start over"));
+    await userEvent.click(screen.getByText("Home"));
     expect(mockNavigate).toHaveBeenCalledWith("/");
   });
 });

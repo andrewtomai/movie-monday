@@ -59,7 +59,10 @@ export function VotingPoolPage() {
           ← Back
         </Button>
         <Button variant="outline" onClick={() => navigate("/")}>
-          Start over
+          Home
+        </Button>
+        <Button onClick={() => navigate("/rankings")} className="flex-1">
+          View rankings →
         </Button>
       </div>
     </PageLayout>
