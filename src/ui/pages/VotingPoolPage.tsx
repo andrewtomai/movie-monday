@@ -58,7 +58,7 @@ export function VotingPoolPage() {
         <Button variant="outline" onClick={() => navigate("/rolling-pool")}>
           ← Back
         </Button>
-        <Button variant="outline" onClick={() => navigate("/")}>
+        <Button variant="outline" className="flex-1" onClick={() => navigate("/")}>
           Home
         </Button>
         <Button onClick={() => navigate("/rankings")} className="flex-1">

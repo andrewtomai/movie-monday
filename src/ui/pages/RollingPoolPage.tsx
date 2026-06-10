@@ -81,7 +81,7 @@ export function RollingPoolPage() {
         <Button variant="outline" onClick={() => navigate("/")}>
           ← Back
         </Button>
-        <Button variant="outline" onClick={reseed} disabled={isAnyChecked}>
+        <Button variant="outline" className="flex-1" onClick={reseed} disabled={isAnyChecked}>
           ++random
         </Button>
         <Button

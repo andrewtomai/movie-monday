@@ -54,7 +54,7 @@ export function AttendeeSelectPage() {
         <Button variant="outline" onClick={reset}>
           Reset
         </Button>
-        <Button variant="outline" onClick={() => navigate("/rankings")}>
+        <Button variant="outline" className="flex-1" onClick={() => navigate("/rankings")}>
           View Rankings
         </Button>
         <Button
