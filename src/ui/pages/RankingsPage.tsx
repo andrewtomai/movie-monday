@@ -7,9 +7,11 @@ import {
   type MovieData,
 } from "../api/movies";
 import { useMovies } from "../hooks/useMovies";
+import { useColumnLayout } from "../hooks/useColumnLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MovieCard } from "../components/MovieCard";
+import { PageLayout } from "../components/PageLayout";
 import {
   Dialog,
   DialogTrigger,
@@ -40,6 +42,7 @@ export function RankingsPage() {
   const [removeDialogMovie, setRemoveDialogMovie] = useState<MovieData | null>(
     null,
   );
+  const { gridRef, style } = useColumnLayout({ itemHeight: 88 });
 
   const sorted = (data ?? [])
     .filter((m) => m.watchedAt != null)
@@ -70,7 +73,7 @@ export function RankingsPage() {
   }
 
   return (
-    <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
+    <PageLayout>
       <h1 className="mb-2 text-center text-4xl font-light tracking-tight text-foreground">
         Movie Rankings
       </h1>
@@ -78,7 +81,7 @@ export function RankingsPage() {
         All watched movies, ranked
       </p>
 
-      <div className="space-y-3">
+      <div ref={gridRef} className="grid gap-3 overflow-auto" style={style}>
         {sorted.length === 0 && (
           <p className="text-center text-muted-foreground">
             No rankings available yet.
@@ -205,6 +208,6 @@ export function RankingsPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
+    </PageLayout>
   );
 }

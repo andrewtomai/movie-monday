@@ -42,7 +42,7 @@ export function MovieCard({
           {rank}
         </span>
       )}
-      {showCheckbox && assignedNumber != null && (
+      {assignedNumber != null && (
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-lg font-bold text-muted-foreground">
           {assignedNumber}
         </span>

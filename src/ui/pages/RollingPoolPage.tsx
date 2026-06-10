@@ -2,7 +2,9 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import { useMembersMovies } from "../hooks/useMemberMovies";
+import { useColumnLayout } from "../hooks/useColumnLayout";
 import { MovieCard } from "../components/MovieCard";
+import { PageLayout } from "../components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { UNWATCHED } from "../../types";
 
@@ -13,6 +15,7 @@ export function RollingPoolPage() {
   const assignRollingPool = useStore((s) => s.assignRollingPool);
   const toggleChecked = useStore((s) => s.toggleChecked);
   const reseed = useStore((s) => s.reseed);
+  const { gridRef, style } = useColumnLayout({ itemHeight: 76 });
 
   const { titles } = useMembersMovies(
     selectedAttendees.map((a) => a.id),
@@ -41,18 +44,20 @@ export function RollingPoolPage() {
 
   if (rollingPool.length === 0) {
     return (
-      <div className="mx-auto flex min-h-svh max-w-lg flex-col items-center justify-center px-4 text-center">
+      <PageLayout center>
         <p className="mb-2 text-lg text-foreground">No eligible movies</p>
-        <p className="mb-6 text-muted-foreground">
+        <p className="mb-6 text-center text-muted-foreground">
           All movies from selected attendees have been watched.
         </p>
-        <Button onClick={() => navigate("/")}>Go back</Button>
-      </div>
+        <div className="flex justify-center">
+          <Button onClick={() => navigate("/")}>Go back</Button>
+        </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
+    <PageLayout>
       <h2 className="mb-1 text-2xl font-light tracking-tight text-foreground">
         Rolling Pool
       </h2>
@@ -60,11 +65,12 @@ export function RollingPoolPage() {
         Select the movies to vote on
       </p>
 
-      <div className="space-y-3">
-        {rollingPool.map((m) => (
+      <div ref={gridRef} className="grid gap-3 overflow-auto" style={style}>
+        {rollingPool.map((m, i) => (
           <MovieCard
             key={m.title}
             title={m.title}
+            assignedNumber={i + 1}
             checked={m.isChecked}
             onClick={() => toggleChecked(m.title)}
           />
@@ -86,6 +92,6 @@ export function RollingPoolPage() {
           Vote →
         </Button>
       </div>
-    </div>
+    </PageLayout>
   );
 }

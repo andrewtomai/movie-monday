@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import { useMembers } from "../hooks/useMembers";
 import { SearchableMultiSelect } from "../components/SearchableMultiSelect";
+import { PageLayout } from "../components/PageLayout";
 import { Button } from "@/components/ui/button";
 
 export function AttendeeSelectPage() {
@@ -29,7 +30,7 @@ export function AttendeeSelectPage() {
   };
 
   return (
-    <div className="mx-auto flex min-h-svh max-w-lg flex-col justify-center px-4">
+    <PageLayout center>
       <h1 className="mb-2 text-center text-4xl font-light tracking-tight text-foreground">
         Misc. Movie Monday
       </h1>
@@ -63,6 +64,6 @@ export function AttendeeSelectPage() {
           Roll →
         </Button>
       </div>
-    </div>
+    </PageLayout>
   );
 }

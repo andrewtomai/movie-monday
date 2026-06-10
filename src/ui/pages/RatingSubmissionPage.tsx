@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMovie, useSubmitRating } from "../api/movies";
 import { useMembers } from "../hooks/useMembers";
+import { PageLayout } from "../components/PageLayout";
 import {
   Combobox,
   ComboboxContent,
@@ -60,22 +61,22 @@ export function RatingSubmissionPage() {
 
   if (movieLoading) {
     return (
-      <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
+      <PageLayout narrow>
         <p className="text-center text-muted-foreground">Loading...</p>
-      </div>
+      </PageLayout>
     );
   }
 
   if (movieError || !movie) {
     return (
-      <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
+      <PageLayout narrow>
         <p className="text-center text-muted-foreground">Movie not found</p>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
+    <PageLayout narrow>
       <h1 className="mb-8 text-center text-4xl font-light tracking-tight text-foreground">
         {movie.title}
       </h1>
@@ -154,6 +155,6 @@ export function RatingSubmissionPage() {
           </p>
         )}
       </div>
-    </div>
+    </PageLayout>
   );
 }

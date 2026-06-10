@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
+import { useColumnLayout } from "../hooks/useColumnLayout";
 import { MovieCard } from "../components/MovieCard";
+import { PageLayout } from "../components/PageLayout";
 import { Button } from "@/components/ui/button";
 
 export function VotingPoolPage() {
   const navigate = useNavigate();
   const rollingPool = useStore((s) => s.rollingPool);
   const [votes, setVotes] = useState<Record<string, number>>({});
+  const { gridRef, style } = useColumnLayout({ itemHeight: 84 });
 
   const votingMovies = rollingPool
     .filter((m) => m.isChecked)
@@ -32,7 +35,7 @@ export function VotingPoolPage() {
   }
 
   return (
-    <div className="mx-auto min-h-svh max-w-lg px-4 py-12">
+    <PageLayout>
       <h2 className="mb-1 text-2xl font-light tracking-tight text-foreground">
         Voting Pool
       </h2>
@@ -40,7 +43,7 @@ export function VotingPoolPage() {
         Time to vote on the final selection
       </p>
 
-      <div className="space-y-3">
+      <div ref={gridRef} className="grid gap-3 overflow-auto" style={style}>
         {votingMovies.map((title) => (
           <MovieCard
             key={title}
@@ -59,6 +62,6 @@ export function VotingPoolPage() {
           Start over
         </Button>
       </div>
-    </div>
+    </PageLayout>
   );
 }
