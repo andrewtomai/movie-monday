@@ -17,7 +17,7 @@ export function RollingPoolPage() {
   const reseed = useStore((s) => s.reseed);
   const { gridRef, style } = useColumnLayout({ itemHeight: 76 });
 
-  const { titles } = useMembersMovies(
+  const { titles, isLoading } = useMembersMovies(
     selectedAttendees.map((a) => a.id),
     UNWATCHED,
   );
@@ -29,10 +29,10 @@ export function RollingPoolPage() {
   }, [selectedAttendees, navigate]);
 
   useEffect(() => {
-    if (titles.length > 0) {
+    if (titles.length > 0 && !isLoading) {
       assignRollingPool(titles);
     }
-  }, [titles, assignRollingPool]);
+  }, [titles, isLoading, assignRollingPool]);
 
   const isAnyChecked = rollingPool.some((m) => m.isChecked);
 

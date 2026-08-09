@@ -22,6 +22,9 @@ interface AppState {
   reset: () => void;
 }
 
+const titlesKey = (movies: { title: string }[]) =>
+  movies.map((m) => m.title).sort().join("\n");
+
 function shuffle<T>(items: T[]): T[] {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
@@ -41,6 +44,13 @@ export const useStore = create<AppState>()(
 
       assignRollingPool: (titles) => {
         if (titles.length === 0) return;
+        const { rollingPool } = get();
+        if (
+          rollingPool.length > 0 &&
+          titlesKey(rollingPool) ===
+            titlesKey(titles.map((title) => ({ title })))
+        )
+          return;
         set({
           rollingPool: shuffle(
             titles.map((title) => ({

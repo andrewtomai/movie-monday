@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RollingPoolPage } from "./RollingPoolPage";
 import { useStore } from "../store";
+import { useMembersMovies } from "../hooks/useMemberMovies";
 import { createWrapper } from "../test/test-utils";
 
 const mockNavigate = vi.fn();
@@ -12,8 +13,13 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+vi.mock("../hooks/useMemberMovies", () => ({
+  useMembersMovies: vi.fn(),
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(useMembersMovies).mockReturnValue({ titles: [], isLoading: false });
   useStore.setState({ selectedAttendees: [], rollingPool: [] });
 });
 
@@ -160,5 +166,49 @@ describe("RollingPoolPage", () => {
     render(<RollingPoolPage />, { wrapper: createWrapper() });
     await userEvent.click(screen.getByText("← Back"));
     expect(mockNavigate).toHaveBeenCalledWith("/");
+  });
+
+  it("preserves existing pool and checks when returning with same titles", () => {
+    useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
+      rollingPool: [
+        { title: "Tenet", isChecked: true },
+        { title: "Dunkirk", isChecked: false },
+        { title: "Inception", isChecked: false },
+      ],
+    });
+    vi.mocked(useMembersMovies).mockReturnValue({
+      titles: ["Inception", "Dunkirk", "Tenet"],
+      isLoading: false,
+    });
+
+    render(<RollingPoolPage />, { wrapper: createWrapper() });
+
+    expect(useStore.getState().rollingPool).toEqual([
+      { title: "Tenet", isChecked: true },
+      { title: "Dunkirk", isChecked: false },
+      { title: "Inception", isChecked: false },
+    ]);
+  });
+
+  it("does not seed the pool from partial data while loading", () => {
+    useStore.setState({
+      selectedAttendees: [
+        { name: "Alice", id: 1 },
+        { name: "Bob", id: 2 },
+      ],
+      rollingPool: [],
+    });
+    vi.mocked(useMembersMovies).mockReturnValue({
+      titles: ["Inception", "Tenet"],
+      isLoading: true,
+    });
+
+    render(<RollingPoolPage />, { wrapper: createWrapper() });
+
+    expect(useStore.getState().rollingPool).toEqual([]);
   });
 });

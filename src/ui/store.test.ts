@@ -39,12 +39,48 @@ describe("store", () => {
       expect(useStore.getState().rollingPool).toEqual([]);
     });
 
-    it("shuffles the pool", () => {
+    it("does not reshuffle or reset checks when given the same titles", () => {
+      useStore.setState({
+        rollingPool: [
+          { title: "Tenet", isChecked: true },
+          { title: "Dunkirk", isChecked: false },
+        ],
+      });
+
+      useStore.getState().assignRollingPool(["Dunkirk", "Tenet"]);
+
+      expect(useStore.getState().rollingPool).toEqual([
+        { title: "Tenet", isChecked: true },
+        { title: "Dunkirk", isChecked: false },
+      ]);
+    });
+
+    it("re-seeds and clears checks when titles change", () => {
+      useStore.setState({
+        rollingPool: [
+          { title: "Tenet", isChecked: true },
+          { title: "Dunkirk", isChecked: false },
+        ],
+      });
+
+      useStore.getState().assignRollingPool(["Tenet", "Dunkirk", "Inception"]);
+
+      const pool = useStore.getState().rollingPool;
+      expect(pool.map((m) => m.title).sort()).toEqual([
+        "Dunkirk",
+        "Inception",
+        "Tenet",
+      ]);
+      expect(pool.every((m) => !m.isChecked)).toBe(true);
+    });
+
+    it("shuffles the pool when re-seeding with changed titles", () => {
       const titles = ["Inception", "Tenet", "Dunkirk", "Baby Driver"];
 
       const results = new Set<string>();
       for (let i = 0; i < 20; i++) {
-        useStore.getState().assignRollingPool(titles);
+        const variant = titles.map((t) => `${t}-${i}`);
+        useStore.getState().assignRollingPool(variant);
         const order = useStore
           .getState()
           .rollingPool.map((m) => m.title)
