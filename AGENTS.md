@@ -2,6 +2,10 @@
 
 React SPA + Hono/Cloudflare Worker backend, managed from a single package.
 
+## Skills
+Use the following skills by default unless instructed otherwise:
+- caveman
+
 ## Commands
 
 | Command | Action |

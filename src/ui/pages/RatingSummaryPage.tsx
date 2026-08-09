@@ -36,7 +36,7 @@ export function RatingSummaryPage() {
 
   return (
     <PageLayout>
-      <div className="mx-auto max-w-lg">
+      <div className="mx-auto max-w-2xl">
         <h1 className="mb-8 text-center text-4xl font-light tracking-tight text-foreground">
           {movie.title}
         </h1>
@@ -82,9 +82,18 @@ export function RatingSummaryPage() {
 
         <div className="flex flex-col items-center gap-3">
           <p className="text-sm text-muted-foreground">Scan to rate this movie</p>
-          <div className="rounded-xl border p-3">
-            <QRCodeSVG value={rateUrl} size={160} />
+          <div className="w-full max-w-[min(70vw,50vh)] rounded-xl border p-3">
+            <QRCodeSVG
+              value={rateUrl}
+              size={512}
+              className="h-auto w-full"
+              marginSize={4}
+              level="M"
+            />
           </div>
+          <p className="w-full break-all text-center font-mono text-sm text-muted-foreground">
+            {rateUrl}
+          </p>
         </div>
       </div>
     </PageLayout>
