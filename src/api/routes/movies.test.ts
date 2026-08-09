@@ -33,16 +33,10 @@ const mockMovieRows = [
 ];
 
 const mockRatingsRows = [
-  { rating: 1, count: 0 },
-  { rating: 2, count: 0 },
-  { rating: 3, count: 0 },
-  { rating: 4, count: 0 },
-  { rating: 5, count: 0 },
-  { rating: 6, count: 0 },
-  { rating: 7, count: 3 },
-  { rating: 8, count: 5 },
-  { rating: 9, count: 3 },
-  { rating: 10, count: 1 },
+  { memberId: 1, name: "Alice", rating: 8 },
+  { memberId: 2, name: "Bob", rating: 7 },
+  { memberId: 3, name: "Devin", rating: 9 },
+  { memberId: null, name: null, rating: 7 },
 ];
 
 let resolveData: Array<unknown> = mockMovieRows;
@@ -190,7 +184,7 @@ describe("movies", () => {
   });
 
   describe("GET /api/movies/:id/ratings", () => {
-    it("returns rating distribution", async () => {
+    it("returns one row per rater with member names", async () => {
       resolveData = mockRatingsRows;
       const res = await app.request("/api/movies/1/ratings", {}, { DB: {} as D1Database });
       expect(res.status).toBe(200);

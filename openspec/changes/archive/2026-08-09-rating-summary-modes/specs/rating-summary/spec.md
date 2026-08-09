@@ -1,10 +1,4 @@
-# rating-summary Specification
-
-## Purpose
-
-Presents a scannable voting QR on the movie rating summary page so that when the page is projected during movie club, attendees can vote from their own phones without the host sharing a link.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Rating summary page shows a scannable QR for voting
 The rating summary page SHALL render a QR code encoding the rate URL for the displayed movie while the page is in voting mode. The QR SHALL scale with the viewport so it is large enough to scan from a distance when the page is displayed on a large screen. The QR SHALL include a quiet zone and use error correction sufficient to remain scannable under video-compressed or dimly lit display conditions.
@@ -35,6 +29,8 @@ The rating summary page SHALL display the movie's rate URL as text beneath the Q
 #### Scenario: URL text hidden in results mode
 - **WHEN** the rating summary page is in results mode
 - **THEN** the rate URL is not displayed as text
+
+## ADDED Requirements
 
 ### Requirement: Rating summary page has two toggleable modes
 The rating summary page SHALL have a results mode and a voting mode. The page SHALL load in results mode and SHALL provide a single control to toggle between the two modes. The control SHALL read "Start Voting" in results mode and "Show Results" in voting mode. The current mode SHALL be persisted so that reloading the page restores it.

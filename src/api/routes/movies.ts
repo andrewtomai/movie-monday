@@ -91,17 +91,24 @@ app.get("/:id/ratings", async (c) => {
   const db = drizzle(c.env.DB);
   const id = Number(c.req.param("id"));
 
-  const distribution = await db
+  const raters = await db
     .select({
+      memberId: ratings.memberId,
+      name: members.name,
       rating: ratings.rating,
-      count: count(ratings.id),
     })
     .from(ratings)
+    .leftJoin(members, eq(ratings.memberId, members.id))
     .where(eq(ratings.movieId, id))
-    .groupBy(ratings.rating)
-    .orderBy(ratings.rating);
+    .orderBy(members.name);
 
-  return c.json(distribution);
+  return c.json(
+    raters.map((r) => ({
+      memberId: r.memberId,
+      name: r.name,
+      rating: r.rating,
+    })),
+  );
 });
 
 app.post("/:id/ratings", async (c) => {

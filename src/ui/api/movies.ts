@@ -16,13 +16,14 @@ export function fetchMovie(id: number): Promise<MovieData> {
   return apiFetch<MovieData>(`/api/movies/${id}`);
 }
 
-export interface RatingDistribution {
+export interface MovieRater {
+  memberId: number | null;
+  name: string | null;
   rating: number;
-  count: number;
 }
 
-export function fetchMovieRatings(id: number): Promise<RatingDistribution[]> {
-  return apiFetch<RatingDistribution[]>(`/api/movies/${id}/ratings`);
+export function fetchMovieRatings(id: number): Promise<MovieRater[]> {
+  return apiFetch<MovieRater[]>(`/api/movies/${id}/ratings`);
 }
 
 export function useMovie(id: number, options?: { refetchInterval?: number }) {

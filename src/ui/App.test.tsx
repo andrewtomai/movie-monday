@@ -41,6 +41,7 @@ function renderWithRouter(initialEntries: string[]) {
 }
 
 beforeEach(() => {
+  localStorage.clear();
   vi.clearAllMocks();
   useStore.setState({ selectedAttendees: [], rollingPool: [] });
   vi.mocked(useMembers).mockReturnValue({
@@ -53,7 +54,11 @@ beforeEach(() => {
     isError: false,
   } as any);
   vi.mocked(useMovieRatings).mockReturnValue({
-    data: Array.from({ length: 10 }, (_, i) => ({ rating: i + 1, count: 0 })),
+    data: Array.from({ length: 10 }, (_, i) => ({
+      memberId: i + 1,
+      name: `Rater ${i + 1}`,
+      rating: (i % 10) + 1,
+    })),
     isLoading: false,
   } as any);
 });
