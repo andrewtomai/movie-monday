@@ -9,6 +9,17 @@ type Env = { DB: D1Database };
 
 const app = new Hono<{ Bindings: Env }>();
 
+function toOmdb(r: {
+  omdbId: string | null;
+  omdbImdbRating: number | null;
+  omdbRtRating: number | null;
+  omdbYear: string | null;
+}) {
+  return r.omdbId
+    ? { imdb: r.omdbImdbRating, rt: r.omdbRtRating, year: r.omdbYear }
+    : null;
+}
+
 app.get("/", async (c) => {
   const db = drizzle(c.env.DB);
   const status = c.req.query("status");
@@ -20,8 +31,13 @@ app.get("/", async (c) => {
       nominatedBy: members.name,
       watchedAt: movies.watchedAt,
       createdAt: movies.createdAt,
+      createdAt: movies.createdAt,
       avgRating: avg(ratings.rating),
       ratingCount: count(ratings.id),
+      omdbId: movies.omdbId,
+      omdbImdbRating: movies.omdbImdbRating,
+      omdbRtRating: movies.omdbRtRating,
+      omdbYear: movies.omdbYear,
     })
     .from(movies)
     .leftJoin(members, eq(movies.nominatedBy, members.id))
@@ -47,6 +63,7 @@ app.get("/", async (c) => {
         avg: r.avgRating ? Number(r.avgRating) : null,
         count: r.ratingCount,
       },
+      omdb: toOmdb(r),
     })),
   );
 });

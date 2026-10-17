@@ -29,6 +29,10 @@ const mockMovieRows = [
     createdAt: "2026-01-01",
     avgRating: 7.92,
     ratingCount: 12,
+    omdbId: "tt3884356",
+    omdbImdbRating: 7.5,
+    omdbRtRating: 92,
+    omdbYear: "2017",
   },
 ];
 
@@ -93,8 +97,17 @@ describe("movies", () => {
       watchedAt: null,
       createdAt: "2026-01-01",
       rating: { avg: null, count: 0 },
+      omdb: null,
     });
     expect(body[2].rating).toEqual({ avg: 7.92, count: 12 });
+  });
+
+  it("GET /api/movies includes omdb data when present", async () => {
+    const res = await app.request("/api/movies", {}, { DB: {} as D1Database });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body[0].omdb).toBeNull();
+    expect(body[2].omdb).toEqual({ imdb: 7.5, rt: 92, year: "2017" });
   });
 
   it("GET /api/movies responds with application/json", async () => {
