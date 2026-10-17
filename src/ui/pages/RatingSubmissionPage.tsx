@@ -4,6 +4,7 @@ import { useMovie, useSubmitRating } from "../api/movies";
 import { useMembers, useCreateMember } from "../hooks/useMembers";
 import { PageLayout } from "../components/PageLayout";
 import { SegmentedControl } from "../components/SegmentedControl";
+import { isBlockedGuestName } from "@/lib/utils";
 import {
   Combobox,
   ComboboxContent,
@@ -51,7 +52,7 @@ export function RatingSubmissionPage() {
 
   const handleAddGuest = () => {
     const name = guestName.trim();
-    if (!name) return;
+    if (!name || isBlockedGuestName(name)) return;
     createMember.mutate(
       { name, role: "guest" },
       {
@@ -79,6 +80,7 @@ export function RatingSubmissionPage() {
   const isSubmitting = submitRating.isPending || createMember.isPending;
   const isSuccess = submitRating.isSuccess;
   const isReVote = selectedMemberId != null && submittedRatings[selectedMemberId] !== undefined;
+  const isBlockedGuest = isBlockedGuestName(guestName);
 
   if (movieLoading) {
     return (
@@ -149,15 +151,21 @@ export function RatingSubmissionPage() {
               <button
                 type="button"
                 className={`w-full rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  guestName.trim()
+                  guestName.trim() && !isBlockedGuest
                     ? "bg-foreground text-background hover:opacity-90"
                     : "bg-muted text-muted-foreground cursor-not-allowed"
                 }`}
-                disabled={!guestName.trim() || createMember.isPending}
+                disabled={!guestName.trim() || isBlockedGuest || createMember.isPending}
                 onClick={handleAddGuest}
               >
                 {createMember.isPending ? "Adding..." : "Add me as a guest"}
               </button>
+              {isBlockedGuest && (
+                <p className="text-sm text-destructive">
+                  Chris, please do not create a guest user for yourself — you
+                  already have an account.
+                </p>
+              )}
               {createMember.isError && (
                 <p className="text-sm text-destructive">
                   {createMember.error?.message ?? "Failed to add guest"}

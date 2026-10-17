@@ -33,18 +33,19 @@ app.post("/", async (c) => {
     role?: string;
   }>();
 
-  if (!name) {
+  if (!name?.trim()) {
     return c.json({ error: "name is required" }, 400);
   }
 
   try {
     const result = await db
       .insert(members)
-      .values({ name, role: role ?? "guest" })
+      .values({ name: name.trim(), role: role ?? "guest" })
       .returning({ id: members.id, name: members.name, role: members.role });
 
     return c.json(result[0], 201);
   } catch {
+    // members_name_nocase_unique (or race on members_name_unique)
     return c.json({ error: "A person with that name already exists" }, 409);
   }
 });

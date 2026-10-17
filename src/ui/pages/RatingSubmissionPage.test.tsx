@@ -195,3 +195,48 @@ describe("RatingSubmissionPage", () => {
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 });
+
+describe("RatingSubmissionPage guest self-signup guard", () => {
+  const mockGuestMutate = vi.fn();
+
+  beforeEach(() => {
+    mockUseCreateMember.mockReturnValue({
+      mutate: mockGuestMutate,
+      isPending: false,
+      isError: false,
+      error: null,
+    });
+  });
+
+  it.each(["Chris", "chris", "Chris S", "chris s", "Chris Stouffer", "CHRIS STOUFFER"])(
+    "warns and blocks creation for %s",
+    async (name) => {
+      const user = userEvent.setup();
+      render(<RatingSubmissionPage />, { wrapper: createWrapper("/movie/1/rate") });
+
+      await user.click(screen.getByRole("button", { name: "New guest" }));
+      await user.type(screen.getByLabelText("Guest name"), name);
+
+      expect(
+        screen.getByText(/Chris, please do not create a guest user for yourself/),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Add me as a guest" })).toBeDisabled();
+
+      await user.click(screen.getByRole("button", { name: "Add me as a guest" }));
+      expect(mockGuestMutate).not.toHaveBeenCalled();
+    },
+  );
+
+  it("does not warn for other names", async () => {
+    const user = userEvent.setup();
+    render(<RatingSubmissionPage />, { wrapper: createWrapper("/movie/1/rate") });
+
+    await user.click(screen.getByRole("button", { name: "New guest" }));
+    await user.type(screen.getByLabelText("Guest name"), "Chris P");
+
+    expect(
+      screen.queryByText(/Chris, please do not create a guest user for yourself/),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add me as a guest" })).toBeEnabled();
+  });
+});

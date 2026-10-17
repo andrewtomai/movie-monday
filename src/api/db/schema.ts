@@ -7,14 +7,23 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
-export const members = sqliteTable("members", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull().unique(),
-  role: text("role").notNull().default("member"),
-  createdAt: text("created_at")
-    .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
-});
+export const members = sqliteTable(
+  "members",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull().unique(),
+    role: text("role").notNull().default("member"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+  },
+  (t) => ({
+    // Case-insensitive duplicate protection; SQLite's UNIQUE is case-sensitive
+    nameNocaseUnique: uniqueIndex("members_name_nocase_unique").on(
+      sql`lower(${t.name})`,
+    ),
+  }),
+);
 
 export const movies = sqliteTable("movies", {
   id: integer("id").primaryKey({ autoIncrement: true }),
