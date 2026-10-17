@@ -3,6 +3,12 @@ import { apiFetch } from "./client";
 import type { MovieStatus } from "../../types";
 import { queryKeys } from "./query-keys";
 
+export interface OmdbData {
+  imdb: number | null;
+  rt: number | null;
+  year: string | null;
+}
+
 export interface MovieData {
   id: number;
   title: string;
@@ -10,6 +16,8 @@ export interface MovieData {
   watchedAt: string | null;
   createdAt: string;
   rating: { avg: number | null; count: number };
+  /** null = no OMDb data; undefined = endpoint does not return it. */
+  omdb?: OmdbData | null;
 }
 
 export function fetchMovie(id: number): Promise<MovieData> {
