@@ -11,6 +11,7 @@ import { useColumnLayout } from "../hooks/useColumnLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MovieCard } from "../components/MovieCard";
+import { OmdbRatings } from "../components/OmdbRatings";
 import { PageLayout } from "../components/PageLayout";
 import {
   Dialog,
@@ -97,6 +98,7 @@ export function RankingsPage() {
             rank={idx + 1}
             rightContent={
               <div className="flex items-center gap-2">
+                <OmdbRatings omdb={movie.omdb} />
                 <span className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
                     ({movie.rating.count})

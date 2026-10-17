@@ -25,6 +25,7 @@ const mockMoviesData = [
     watchedAt: "2026-02-09",
     createdAt: "2026-01-01",
     rating: { avg: 7.92, count: 12 },
+    omdb: { imdb: 7.5, rt: 92, year: "2017" },
   },
   {
     id: 2,
@@ -105,6 +106,28 @@ describe("RankingsPage", () => {
     expect(screen.getByText("(12)")).toBeInTheDocument();
     expect(screen.getByText("6.75")).toBeInTheDocument();
     expect(screen.getByText("(8)")).toBeInTheDocument();
+  });
+
+  it("shows OMDb scores next to the club rating", () => {
+    vi.mocked(useMovies).mockReturnValue({
+      data: mockMoviesData,
+    } as any);
+
+    render(<RankingsPage />, { wrapper: createWrapper() });
+
+    expect(screen.getByText("IMDb 7.5")).toBeInTheDocument();
+    expect(screen.getByText("RT 92%")).toBeInTheDocument();
+  });
+
+  it("hides OMDb scores when a movie has no omdb data", () => {
+    vi.mocked(useMovies).mockReturnValue({
+      data: mockMoviesData,
+    } as any);
+
+    render(<RankingsPage />, { wrapper: createWrapper() });
+
+    // "The Witch" row has no omdb data — only one IMDb chip on screen
+    expect(screen.getAllByText(/^IMDb/)).toHaveLength(1);
   });
 
   it("shows empty state when no data", () => {
