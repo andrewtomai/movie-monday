@@ -17,9 +17,16 @@ vi.mock("../hooks/useMemberMovies", () => ({
   useMembersMovies: vi.fn(),
 }));
 
+vi.mock("../hooks/useOmdbByTitle", () => ({
+  useOmdbByTitle: vi.fn(),
+}));
+
+import { useOmdbByTitle } from "../hooks/useOmdbByTitle";
+
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(useMembersMovies).mockReturnValue({ titles: [], isLoading: false });
+  vi.mocked(useOmdbByTitle).mockReturnValue(new Map());
   useStore.setState({ selectedAttendees: [], rollingPool: [] });
 });
 
@@ -51,6 +58,24 @@ describe("RollingPoolPage", () => {
     expect(screen.getByText("Rolling Pool")).toBeInTheDocument();
     expect(screen.getByText("Tenet")).toBeInTheDocument();
     expect(screen.getByText("Dunkirk")).toBeInTheDocument();
+  });
+
+  it("shows OMDb scores for pool movies", () => {
+    useStore.setState({
+      selectedAttendees: [{ name: "Alice", id: 1 }],
+      rollingPool: [
+        { title: "Tenet", isChecked: false },
+        { title: "Dunkirk", isChecked: false },
+      ],
+    });
+    vi.mocked(useOmdbByTitle).mockReturnValue(
+      new Map([["Tenet", { imdb: 7.4, rt: 70, year: "2020" }]]),
+    );
+
+    render(<RollingPoolPage />, { wrapper: createWrapper() });
+
+    expect(screen.getByText("IMDb 7.4")).toBeInTheDocument();
+    expect(screen.getByText("RT 70%")).toBeInTheDocument();
   });
 
   it("toggles checked state when clicking a movie card", async () => {
