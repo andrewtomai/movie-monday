@@ -35,6 +35,10 @@ export const movies = sqliteTable("movies", {
   createdAt: text("created_at")
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
+  omdbId: text("omdb_id").unique(),
+  omdbImdbRating: real("omdb_imdb_rating"),
+  omdbRtRating: integer("omdb_rt_rating"),
+  omdbYear: text("omdb_year"),
 });
 
 export const ratings = sqliteTable(
