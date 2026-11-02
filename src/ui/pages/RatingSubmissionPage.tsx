@@ -212,11 +212,11 @@ export function RatingSubmissionPage() {
         )}
 
         {isSuccess && !isReVote && (
-          <p className="text-center text-sm text-green-600">Rating submitted!</p>
+          <p className="text-center text-sm text-green-600 dark:text-green-400">Rating submitted!</p>
         )}
 
         {isReVote && isSuccess && (
-          <p className="text-center text-sm text-green-600">Rating updated!</p>
+          <p className="text-center text-sm text-green-600 dark:text-green-400">Rating updated!</p>
         )}
 
         {isReVote && !isSuccess && (

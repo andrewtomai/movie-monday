@@ -1,9 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070b09" />
+    <script>
+      // Apply the saved color theme before first paint. Dark is the default,
+      // and the inline fallback above keeps the page dark if this cannot run.
+      (function () {
+        try {
+          var stored = localStorage.getItem("movie-monday-theme");
+          var theme =
+            stored === "light" || stored === "dark" || stored === "system"
+              ? stored
+              : "dark";
+          var resolved = theme;
+          if (theme === "system") {
+            var prefersLight =
+              typeof window.matchMedia === "function" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches === false;
+            resolved = prefersLight ? "light" : "dark";
+          }
+          var root = document.documentElement;
+          root.classList.toggle("dark", resolved === "dark");
+          root.style.colorScheme = resolved;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (!meta) {
+            meta = document.createElement("meta");
+            meta.setAttribute("name", "theme-color");
+            document.head.appendChild(meta);
+          }
+          meta.setAttribute(
+            "content",
+            resolved === "dark" ? "#070b09" : "#f9fdfb",
+          );
+        } catch (error) {
+          document.documentElement.classList.add("dark");
+          document.documentElement.style.colorScheme = "dark";
+        }
+      })();
+    </script>
     <title>movie-monday</title>
   </head>
   <body>

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -11,7 +12,7 @@ export function PageLayout({ children, className, narrow, center }: PageLayoutPr
   return (
     <div
       className={cn(
-        "mx-auto min-h-svh px-4",
+        "relative mx-auto min-h-svh px-4",
         center ? "flex flex-col justify-center" : "py-12",
         narrow
           ? "max-w-lg"
@@ -19,6 +20,9 @@ export function PageLayout({ children, className, narrow, center }: PageLayoutPr
         className,
       )}
     >
+      <div className="absolute top-4 right-4 z-10">
+        <ThemeToggle />
+      </div>
       {children}
     </div>
   );
