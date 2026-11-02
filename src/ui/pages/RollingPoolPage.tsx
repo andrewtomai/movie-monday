@@ -4,8 +4,6 @@ import { useStore } from "../store";
 import { useMembersMovies } from "../hooks/useMemberMovies";
 import { useColumnLayout } from "../hooks/useColumnLayout";
 import { MovieCard } from "../components/MovieCard";
-import { OmdbRatings } from "../components/OmdbRatings";
-import { useOmdbByTitle } from "../hooks/useOmdbByTitle";
 import { PageLayout } from "../components/PageLayout";
 import { Button } from "@/components/ui/button";
 import { UNWATCHED } from "../../types";
@@ -23,7 +21,6 @@ export function RollingPoolPage() {
     selectedAttendees.map((a) => a.id),
     UNWATCHED,
   );
-  const omdbByTitle = useOmdbByTitle();
 
   useEffect(() => {
     if (selectedAttendees.length === 0) {
@@ -76,7 +73,6 @@ export function RollingPoolPage() {
             assignedNumber={i + 1}
             checked={m.isChecked}
             onClick={() => toggleChecked(m.title)}
-            rightContent={<OmdbRatings omdb={omdbByTitle.get(m.title)} />}
           />
         ))}
       </div>

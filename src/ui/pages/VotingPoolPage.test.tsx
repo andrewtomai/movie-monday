@@ -12,15 +12,8 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-vi.mock("../hooks/useOmdbByTitle", () => ({
-  useOmdbByTitle: vi.fn(),
-}));
-
-import { useOmdbByTitle } from "../hooks/useOmdbByTitle";
-
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.mocked(useOmdbByTitle).mockReturnValue(new Map());
   useStore.setState({ selectedAttendees: [], rollingPool: [] });
 });
 
@@ -42,23 +35,6 @@ describe("VotingPoolPage", () => {
     expect(screen.getByText("Voting Pool")).toBeInTheDocument();
     expect(screen.getByText("Tenet")).toBeInTheDocument();
     expect(screen.getByText("Dunkirk")).toBeInTheDocument();
-  });
-
-  it("shows OMDb scores for voted movies", () => {
-    useStore.setState({
-      rollingPool: [
-        { title: "Tenet", isChecked: true },
-        { title: "Dunkirk", isChecked: true },
-      ],
-    });
-    vi.mocked(useOmdbByTitle).mockReturnValue(
-      new Map([["Dunkirk", { imdb: 7.8, rt: 76, year: "2017" }]]),
-    );
-
-    render(<VotingPoolPage />, { wrapper: createWrapper() });
-
-    expect(screen.getByText("IMDb 7.8")).toBeInTheDocument();
-    expect(screen.getByText("RT 76%")).toBeInTheDocument();
   });
 
   it("starts each movie at 0 votes", () => {
