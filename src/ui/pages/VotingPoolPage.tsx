@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import { useColumnLayout } from "../hooks/useColumnLayout";
 import { MovieCard } from "../components/MovieCard";
-import { OmdbRatings } from "../components/OmdbRatings";
-import { useOmdbByTitle } from "../hooks/useOmdbByTitle";
 import { PageLayout } from "../components/PageLayout";
 import { Button } from "@/components/ui/button";
 
@@ -12,7 +10,6 @@ export function VotingPoolPage() {
   const navigate = useNavigate();
   const rollingPool = useStore((s) => s.rollingPool);
   const [votes, setVotes] = useState<Record<string, number>>({});
-  const omdbByTitle = useOmdbByTitle();
   const { gridRef, style } = useColumnLayout({ itemHeight: 84 });
 
   const votingMovies = rollingPool
@@ -53,7 +50,6 @@ export function VotingPoolPage() {
             title={title}
             votes={votes[title] ?? 0}
             onVote={(delta) => handleVote(title, delta)}
-            rightContent={<OmdbRatings omdb={omdbByTitle.get(title)} />}
           />
         ))}
       </div>
